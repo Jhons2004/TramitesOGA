@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🏛️ OGA - Portal de Acreditación</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; }
+    :root {
+      --primary: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      --primary-solid:#2563eb; --secondary: linear-gradient(135deg,#059669 0%,#10b981 100%);
+      --bg1:#fff; --bg2:#f8fafc; --surface:#fff;
+      --text:#0f172a; --text2:#475569; --text3:#64748b; --inv:#fff;
+      --border:#e2e8f0; --shadow: 0 10px 30px rgba(0,0,0,.10);
+      --r:14px; --t: .25s ease;
+    }
+    .dark {
+      --bg1:#0f172a; --bg2:#1e293b; --surface:#1e293b;
+      --text:#f8fafc; --text2:#cbd5e1; --text3:#94a3b8; --border:#334155;
+    }
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      min-height: 100svh; display:grid; place-items:center;
+      background: linear-gradient(135deg,var(--bg1) 0%, var(--bg2) 100%);
+      color: var(--text);
+      padding: 16px;
+    }
+    .card {
+      width:min(520px, 96vw); background: var(--surface); border:1px solid var(--border);
+      border-radius: 16px; padding: 28px; box-shadow: var(--shadow); position:relative;
+    }
+    .card::before { content:""; position:absolute; inset:0 0 auto 0; height:4px; background: var(--primary); border-radius:16px 16px 0 0; }
+    h1 { font-size: 28px; font-weight: 800; background: var(--primary); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-align:center; margin: 6px 0 10px; cursor:pointer;}
+    .sub { text-align:center; color:var(--text2); margin-bottom: 18px; }
+    label { font-size:13px; font-weight:600; color:var(--text); display:block; margin: 10px 0 8px; }
+    select, input, button {
+      width:100%; padding: 12px 14px; border-radius: 12px; border:2px solid var(--border);
+      background: var(--bg2); color: var(--text); font-size: 15px; transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+    }
+    select:focus, input:focus { outline: none; border-color:#3b82f6; box-shadow:0 0 0 4px rgba(59,130,246,.12); transform: translateY(-1px);}
+    .btn { background: var(--primary); color: var(--inv); border:none; font-weight:700; cursor:pointer; margin-top: 6px; }
+    .row { display:grid; grid-template-columns: 1fr; gap: 10px; }
+    .hidden { display:none !important; }
+    .status { margin: 14px 0; padding: 12px; border-radius: 12px; border:2px solid rgba(59,130,246,.20); background: rgba(59,130,246,.08); color:#2563eb; font-weight:600; text-align:center;}
+    .status.error { border-color: rgba(239,68,68,.25); background: rgba(239,68,68,.10); color:#ef4444;}
+    .status.warn { border-color: rgba(245,158,11,.25); background: rgba(245,158,11,.10); color:#d97706;}
+    .toggle { position:absolute; top: 12px; right: 12px; width: 44px; height:44px; border-radius: 50%; border:1px solid var(--border); background: var(--surface); cursor:pointer; }
+    .footer { text-align:center; margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--border); color: var(--text3); font-size: 12px;}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <button class="toggle" id="themeBtn" title="Cambiar tema">🌙</button>
+    <h1 id="title">🏛️ OGA Guatemala</h1>
+    <p class="sub">Portal de Gestión de Acreditación y Reconocimiento</p>
+
+    <div id="statusBox" class="status hidden"></div>
+
+    <div class="form-group">
+      <label for="usuario-tipo">Tipo de Acceso</label>
+      <select id="usuario-tipo">
+        <option value="">Selecciona tu tipo de acceso</option>
+        <option value="interno">👨‍💼 Personal OGA</option>
+        <option value="cliente">🏢 Organización/Empresa</option>
+      </select>
+    </div>
+
+    <div id="form-interno" class="hidden">
+      <label for="nombre-completo">Nombre Completo</label>
+      <input id="nombre-completo" placeholder="Ingresa tu nombre completo" />
+      <label for="password-interno">Contraseña</label>
+      <input id="password-interno" type="password" placeholder="Ingresa tu contraseña institucional" />
+      <button class="btn" id="btnLoginInterno">🔐 Acceder al Sistema</button>
+    </div>
+
+    <div id="form-cliente" class="hidden">
+      <label for="nombre-empresa">Nombre de la Organización</label>
+      <input id="nombre-empresa" placeholder="Nombre de tu organización/empresa" />
+      <label for="password-cliente">Contraseña</label>
+      <input id="password-cliente" type="password" placeholder="Contraseña de acceso" />
+      <button class="btn" id="btnLoginCliente">🏢 Acceder al Portal</button>
+    </div>
+
+    <div id="success" class="hidden" style="text-align:center; margin-top:10px;">
+      <div class="status">✅ Acceso autorizado. Redirigiendo…</div>
+      <button class="btn" id="btnIr">🚀 Ir al Panel de Control</button>
+      <div style="margin-top:8px;">
+        <button class="btn" style="background:#ef4444" id="btnLogout">🚪 Cerrar sesión</button>
+      </div>
+    </div>
+
+    <div class="footer">© 2024 OGA Guatemala</div>
+  </main>
+
+  <script>
+    // Config
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    const BASE = 'https://jhons2004.github.io/TramitesOGA';
+    const DASHBOARD_URLS = {
+      'Admin': `${BASE}/admin-dashboard.html`,
+      'Jefe OGA': `${BASE}/admin-dashboard.html`,
+      'Director': `${BASE}/admin-dashboard.html`,
+      'Oficial de Acreditación': `${BASE}/oficial-dashboard.html`,
+      'Cliente': `${BASE}/cliente-dashboard.html`
+    };
+
+    // Theme
+    const themeBtn = document.getElementById('themeBtn');
+    function applyTheme(mode) {
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark'); themeBtn.textContent = '☀️';
+      } else {
+        document.documentElement.classList.remove('dark'); themeBtn.textContent = '🌙';
+      }
+    }
+    themeBtn.addEventListener('click', () => {
+      const current = localStorage.getItem('oga-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      localStorage.setItem('oga-theme', next);
+      applyTheme(next);
+    });
+
+    // UI helpers
+    const statusBox = document.getElementById('statusBox');
+    function showStatus(msg, type='info') {
+      statusBox.textContent = msg;
+      statusBox.classList.remove('hidden','error','warn');
+      if (type==='error') statusBox.classList.add('error');
+      else if (type==='warn') statusBox.classList.add('warn');
+    }
+    function hideStatus(){ statusBox.classList.add('hidden'); }
+
+    // API
+    async function callAPI(action, params = {}) {
+      const url = new URL(API_URL);
+      url.searchParams.append('action', action);
+      Object.entries(params).forEach(([k,v]) => v!=null && url.searchParams.append(k, v));
+      const res = await fetch(url.toString());
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      return res.json();
+    }
+
+    // Login handlers
+    document.getElementById('usuario-tipo').addEventListener('change', (e) => {
+      hideStatus();
+      document.getElementById('form-interno').classList.toggle('hidden', e.target.value!=='interno');
+      document.getElementById('form-cliente').classList.toggle('hidden', e.target.value!=='cliente');
+    });
+
+    document.getElementById('btnLoginInterno').addEventListener('click', async () => {
+      const nombre = document.getElementById('nombre-completo').value.trim();
+      const pass = document.getElementById('password-interno').value.trim();
+      if (!nombre || !pass) return showStatus('⚠️ Completa todos los campos', 'warn');
+      showStatus('🔐 Verificando credenciales...');
+      try {
+        const r = await callAPI('authenticateInternal', { nombreCompleto:nombre, password:pass });
+        if (r.success) {
+          localStorage.setItem('oga-user', JSON.stringify(r.user));
+          localStorage.setItem('oga-user-type','interno');
+          showSuccess();
+        } else showStatus('❌ '+(r.message||'Credenciales inválidas'), 'error');
+      } catch(e){ showStatus('❌ Error de conexión', 'error'); }
+    });
+
+    document.getElementById('btnLoginCliente').addEventListener('click', async () => {
+      const empresa = document.getElementById('nombre-empresa').value.trim();
+      const pass = document.getElementById('password-cliente').value.trim();
+      if (!empresa || !pass) return showStatus('⚠️ Completa todos los campos', 'warn');
+      showStatus('🔐 Verificando acceso organizacional...');
+      try {
+        const r = await callAPI('authenticateClient', { nombreEmpresa:empresa, password:pass });
+        if (r.success) {
+          localStorage.setItem('oga-user', JSON.stringify(r.user));
+          localStorage.setItem('oga-user-type','cliente');
+          showSuccess();
+        } else showStatus('❌ '+(r.message||'Acceso denegado'), 'error');
+      } catch(e){ showStatus('❌ Error de conexión', 'error'); }
+    });
+
+    function showSuccess(){
+      hideStatus();
+      document.getElementById('success').classList.remove('hidden');
+      showStatus('✅ Acceso autorizado. Redirigiendo…');
+      setTimeout(redirectToDashboard, 800);
+    }
+
+    function redirectToDashboard() {
+      const user = JSON.parse(localStorage.getItem('oga-user') || 'null');
+      const type = localStorage.getItem('oga-user-type');
+      const url = (type==='interno') ? (DASHBOARD_URLS[user?.rol] || DASHBOARD_URLS['Admin'])
+                                     : DASHBOARD_URLS['Cliente'];
+      location.href = url;
+    }
+
+    document.getElementById('btnIr').addEventListener('click', redirectToDashboard);
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      localStorage.removeItem('oga-user'); localStorage.removeItem('oga-user-type'); location.reload();
+    });
+
+    // Enter handling
+    document.addEventListener('keypress', (ev) => {
+      if (ev.key !== 'Enter') return;
+      const a = document.activeElement?.id;
+      if (a==='password-interno') document.getElementById('btnLoginInterno').click();
+      if (a==='password-cliente') document.getElementById('btnLoginCliente').click();
+    });
+
+    // Init
+    (function init(){
+      applyTheme(localStorage.getItem('oga-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+      const existing = localStorage.getItem('oga-user');
+      if (existing) { document.getElementById('success').classList.remove('hidden'); showStatus('Sesión detectada. Redirigiendo…'); setTimeout(redirectToDashboard, 700); }
+    })();
+  </script>
+</body>
+</html>

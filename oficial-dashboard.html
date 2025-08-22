@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>👨‍💼 Panel Oficial OGA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#f8fafc;color:#0f172a}
+    .header{background:#fff;border-bottom:1px solid #e2e8f0; padding:14px 18px; display:flex; justify-content:space-between; align-items:center}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    .btn{border:none;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
+    .btn-primary{background:#2563eb;color:#fff}
+    .btn-danger{background:#ef4444;color:#fff}
+    .btn-success{background:#10b981;color:#fff}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px; padding:16px; box-shadow:0 6px 20px rgba(0,0,0,.05); margin-bottom:14px}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0}
+    th,td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left}
+    th{background:#f1f5f9}
+    .status{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;display:inline-block}
+    .s-proc{background:rgba(245,158,11,.15); color:#b45309}
+    .badge{position:relative; padding-left:24px}
+    .badge::before{content:'🔔'; position:absolute; left:0}
+    .priority{display:inline-flex; gap:6px; align-items:center}
+    .p-high{color:#ef4444}.p-med{color:#d97706}.p-low{color:#10b981}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div><strong>👨‍💼 OGA</strong> — Panel Oficial</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="badge" id="notif" data-count="0"> </span>
+      <span id="userName" style="font-weight:700;"></span>
+      <span id="userRole" style="opacity:.75;"></span>
+      <button class="btn btn-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>📋 Mis Casos Asignados</h3>
+        <button class="btn btn-primary" onclick="loadCases()">🔄 Actualizar</button>
+      </div>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Cliente</th><th>Tipo</th><th>Prioridad</th><th>Estado</th><th>Creado</th><th>Acciones</th></tr></thead>
+          <tbody id="myCases"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>🔄 Actualizar Estado</h3>
+      <label for="caseSel">Seleccionar Caso</label>
+      <select id="caseSel"><option value="">Selecciona un caso…</option></select>
+      <div id="updWrap" style="display:none; margin-top:10px;">
+        <label>Estado actual</label>
+        <input id="curStatus" readonly style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc" />
+        <label style="margin-top:8px;">Nuevo estado</label>
+        <select id="newStatus" style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc">
+          <option>En Proceso</option><option>En Revisión</option><option>Pendiente Documentos</option><option>Completado</option>
+        </select>
+        <label style="margin-top:8px;">Comentarios</label>
+        <textarea id="comments" rows="3" style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#fff"></textarea>
+        <div style="margin-top:10px;"><button class="btn btn-success" onclick="updateStatus()">✅ Actualizar</button></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_URL='https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    const BASE='https://jhons2004.github.io/TramitesOGA';
+    let user=null, myCases=[];
+
+    function goLogin(){ location.href = `${BASE}/index.html`; }
+    function logout(){ localStorage.removeItem('oga-user'); localStorage.removeItem('oga-user-type'); goLogin(); }
+    async function callAPI(action, params={}){
+      const u=new URL(API_URL); u.searchParams.append('action',action);
+      Object.entries(params).forEach(([k,v])=> v!=null && u.searchParams.append(k,v));
+      const r=await fetch(u); if(!r.ok) throw new Error(r.status); return r.json();
+    }
+
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const raw=localStorage.getItem('oga-user'); if(!raw) return goLogin();
+      user = JSON.parse(raw);
+      if(user.rol!=='Oficial de Acreditación') { alert('Acceso denegado'); return goLogin(); }
+      document.getElementById('userName').textContent = user.nombre || '';
+      document.getElementById('userRole').textContent = `(${user.rol})`;
+      await loadCases();
+      setInterval(checkAssignments, 30000);
+    });
+
+    async function loadCases(){
+      const ts= await callAPI('getTicketsByRole', { userEmail:user.email, userRole:user.rol, userName:user.nombre });
+      myCases = ts;
+      renderMyCases(ts);
+      updateSelect(ts);
+    }
+    function priority(ticket){
+      const days = Math.floor((Date.now()- new Date(ticket.fechaCreacion)) / 86400000);
+      if (days>7) return {cls:'p-high', label:'Alta', icon:'🔴'};
+      if (days>3) return {cls:'p-med', label:'Media', icon:'🟡'};
+      return {cls:'p-low', label:'Baja', icon:'🟢'};
+    }
+    function renderMyCases(ts){
+      document.getElementById('myCases').innerHTML = ts.map(t=>{
+        const p=priority(t);
+        return `<tr>
+          <td>${t.id}</td><td>${t.empresa}</td><td>${t.tipoTramite}</td>
+          <td><span class="priority ${p.cls}">${p.icon} ${p.label}</span></td>
+          <td><span class="status s-proc">${t.estado}</span></td>
+          <td>${new Date(t.fechaCreacion).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-primary" onclick="view('${t.id}')">👁️ Ver</button>
+            <button class="btn btn-success" onclick="chat('${t.id}')">💬 Chat</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+    function updateSelect(ts){
+      const s=document.getElementById('caseSel');
+      s.innerHTML = '<option value="">Selecciona un caso…</option>' + ts.map(t=> `<option value="${t.id}">${t.id} — ${t.empresa} (${t.estado})</option>`).join('');
+      s.onchange = ()=>{
+        const id=s.value; const t=myCases.find(x=>x.id===id);
+        const wrap=document.getElementById('updWrap');
+        if(!id||!t){ wrap.style.display='none'; return; }
+        document.getElementById('curStatus').value = t.estado;
+        wrap.style.display='block';
+      };
+    }
+    async function updateStatus(){
+      const id=document.getElementById('caseSel').value;
+      const ns=document.getElementById('newStatus').value;
+      const c=document.getElementById('comments').value;
+      if(!id||!ns) return alert('Completa los campos');
+      const r=await callAPI('updateTicketStatus',{ ticketId:id, newStatus:ns });
+      if(r.success){ alert('Actualizado'); await loadCases(); document.getElementById('updWrap').style.display='none'; document.getElementById('comments').value=''; }
+      else alert('Error: '+(r.message||''));
+      console.log('Notif cliente', {id, ns, c});
+    }
+    function view(id){ alert('Detalle '+id); }
+    function chat(id){ localStorage.setItem('activeCaseId', id); location.href = `${BASE}/chat.html?case=${encodeURIComponent(id)}`; }
+
+    async function checkAssignments(){
+      const ts= await callAPI('getTicketsByRole', { userEmail:user.email, userRole:user.rol, userName:user.nombre });
+      const diff = Math.max(0, ts.length - myCases.length);
+      if (diff>0){
+        document.getElementById('notif').setAttribute('data-count', diff);
+        alert(`🔔 Tienes ${diff} caso(s) nuevo(s)`);
+        myCases = ts;
+        renderMyCases(ts);
+        updateSelect(ts);
+      }
+    }
+  </script>
+</body>
+</html>

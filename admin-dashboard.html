@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🏛️ Panel Administrativo OGA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#f8fafc;color:#0f172a}
+    .header{background:#fff;border-bottom:1px solid #e2e8f0; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10}
+    .container{max-width:1200px;margin:0 auto;padding:18px}
+    .btn{border:none;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
+    .btn-primary{background:#2563eb;color:#fff}
+    .btn-danger{background:#ef4444;color:#fff}
+    .btn-warning{background:#f59e0b;color:#fff}
+    .grid{display:grid; gap:14px}
+    @media(min-width:860px){ .grid-4{ grid-template-columns: repeat(4, 1fr);} }
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px; padding:16px; box-shadow:0 6px 20px rgba(0,0,0,.05)}
+    .stat{border-left:4px solid #2563eb}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0}
+    th,td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left}
+    th{background:#f1f5f9}
+    .status{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;display:inline-block}
+    .s-new{background:rgba(59,130,246,.12); color:#1d4ed8}
+    .s-proc{background:rgba(245,158,11,.15); color:#b45309}
+    .s-done{background:rgba(16,185,129,.15); color:#047857}
+    .modal{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:50}
+    .modal.show{display:flex}
+    .modal .box{background:#fff; border-radius:12px; padding:20px; width:min(520px, 94vw); border:1px solid #e2e8f0}
+    .row{display:flex; gap:10px; justify-content:flex-end; margin-top:14px}
+    select,input{width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div><strong>🏛️ OGA</strong> — Panel Administrativo</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="userName" style="font-weight:700;"></span>
+      <span id="userRole" style="opacity:.75;"></span>
+      <button class="btn btn-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="grid grid-4">
+      <div class="card stat"><div style="font-size:26px;font-weight:800" id="total-cases">0</div><div>Casos Totales</div></div>
+      <div class="card stat"><div style="font-size:26px;font-weight:800" id="pending-cases">0</div><div>Casos Pendientes</div></div>
+      <div class="card stat"><div style="font-size:26px;font-weight:800" id="active-officers">0</div><div>Oficiales Activos</div></div>
+      <div class="card stat"><div style="font-size:26px;font-weight:800" id="completed-cases">0</div><div>Casos Completados</div></div>
+    </section>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>🎯 Casos sin Asignar</h3>
+        <button class="btn btn-primary" onclick="refresh()">🔄 Actualizar</button>
+      </div>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Cliente</th><th>Tipo</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="unassigned"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>📈 Casos en Proceso</h3>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Cliente</th><th>Oficial</th><th>Estado</th><th>Actualización</th><th>Acciones</th></tr></thead>
+          <tbody id="active"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>👨‍💼 Oficiales</h3>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>Nombre</th><th>Email</th><th>Asignados</th><th>Completados</th><th>Estado</th></tr></thead>
+          <tbody id="officers"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="assignModal">
+    <div class="box">
+      <h3>Asignar Oficial</h3>
+      <label for="assignId">Caso ID</label>
+      <input id="assignId" readonly />
+      <label for="assignOfficer">Seleccionar Oficial</label>
+      <select id="assignOfficer"><option value="">Selecciona un oficial…</option></select>
+      <div class="row">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="assign()">Asignar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL='https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    const BASE='https://jhons2004.github.io/TramitesOGA';
+    let user=null;
+
+    function goLogin(){ location.href = `${BASE}/index.html`; }
+    function logout(){ localStorage.removeItem('oga-user'); localStorage.removeItem('oga-user-type'); goLogin(); }
+
+    async function callAPI(action, params={}){
+      const u=new URL(API_URL);
+      u.searchParams.append('action', action);
+      Object.entries(params).forEach(([k,v])=> v!=null && u.searchParams.append(k,v));
+      const r=await fetch(u); if(!r.ok) throw new Error(r.status); return r.json();
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const raw = localStorage.getItem('oga-user');
+      if(!raw) return goLogin();
+      user = JSON.parse(raw);
+      if(!['Admin','Jefe OGA','Director'].includes(user.rol)) { alert('Acceso denegado'); return goLogin(); }
+      document.getElementById('userName').textContent = user.nombre || '';
+      document.getElementById('userRole').textContent = `(${user.rol})`;
+      await load();
+    });
+
+    async function load(){
+      const tickets = await callAPI('getTicketsByRole', { userEmail: user.email, userRole: user.rol, userName: user.nombre });
+      stats(tickets);
+      renderUnassigned(tickets);
+      renderActive(tickets);
+      renderOfficers();
+    }
+    function stats(ts){
+      document.getElementById('total-cases').textContent = ts.length;
+      document.getElementById('pending-cases').textContent = ts.filter(t=>t.estado==='Nuevo').length;
+      document.getElementById('completed-cases').textContent = ts.filter(t=>t.estado==='Completado').length;
+      document.getElementById('active-officers').textContent = '5';
+    }
+    function renderUnassigned(ts){
+      const list = ts.filter(t=> t.estado==='Nuevo' && !t.oficialAsignado);
+      document.getElementById('unassigned').innerHTML = list.map(t=>`
+        <tr>
+          <td>${t.id}</td><td>${t.empresa}</td><td>${t.tipoTramite}</td>
+          <td>${new Date(t.fechaCreacion).toLocaleDateString()}</td>
+          <td><span class="status s-new">${t.estado}</span></td>
+          <td><button class="btn btn-primary" onclick="openAssign('${t.id}')">Asignar</button></td>
+        </tr>`).join('');
+    }
+    function renderActive(ts){
+      const list = ts.filter(t=> t.oficialAsignado && t.estado!=='Completado');
+      document.getElementById('active').innerHTML = list.map(t=>`
+        <tr>
+          <td>${t.id}</td><td>${t.empresa}</td><td>${t.oficialAsignado}</td>
+          <td><span class="status s-proc">${t.estado}</span></td>
+          <td>${new Date(t.fechaActualizacion).toLocaleDateString()}</td>
+          <td><button class="btn btn-warning" onclick="viewCase('${t.id}')">Ver</button></td>
+        </tr>`).join('');
+    }
+    function renderOfficers(){
+      const officers = [
+        { nombre:'Carlos Méndez', email:'carlos@oga.gov.gt', asignados:3, completados:12 },
+        { nombre:'Ana García', email:'ana@oga.gov.gt', asignados:2, completados:8 },
+        { nombre:'Luis Rodríguez', email:'luis@oga.gov.gt', asignados:4, completados:15 },
+      ];
+      document.getElementById('officers').innerHTML = officers.map(o=>`
+        <tr><td>${o.nombre}</td><td>${o.email}</td><td>${o.asignados}</td><td>${o.completados}</td><td><span class="status s-done">Activo</span></td></tr>
+      `).join('');
+      document.getElementById('assignOfficer').innerHTML = '<option value="">Selecciona un oficial…</option>' + officers.map(o=>`<option value="${o.nombre}">${o.nombre}</option>`).join('');
+    }
+    function viewCase(id){ alert('Detalle '+id); }
+    function refresh(){ load(); }
+
+    function openAssign(id){ document.getElementById('assignId').value=id; document.getElementById('assignModal').classList.add('show'); }
+    function closeModal(){ document.getElementById('assignModal').classList.remove('show'); }
+    async function assign(){
+      const id=document.getElementById('assignId').value;
+      const officer=document.getElementById('assignOfficer').value;
+      if(!officer) return alert('Selecciona un oficial');
+      const r=await callAPI('assignTicketToOfficer',{ ticketId:id, oficialName:officer, assignedBy:user.nombre });
+      if(r.success){ alert('Asignado'); closeModal(); load(); } else alert('Error: '+(r.message||''));
+    }
+  </script>
+</body>
+</html>

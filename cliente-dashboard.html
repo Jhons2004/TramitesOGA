@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🏢 Portal Cliente OGA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#f8fafc;color:#0f172a}
+    .header{background:#fff;border-bottom:1px solid #e2e8f0; padding:14px 18px; display:flex; justify-content:space-between; align-items:center}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    .btn{border:none;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
+    .btn-primary{background:#2563eb;color:#fff}
+    .btn-danger{background:#ef4444;color:#fff}
+    .btn-success{background:#10b981;color:#fff}
+    .btn-warning{background:#f59e0b;color:#fff}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px; padding:16px; box-shadow:0 6px 20px rgba(0,0,0,.05); margin-bottom:14px}
+    .grid{display:grid; gap:14px}
+    @media(min-width:768px){ .grid-3{ grid-template-columns: repeat(3, 1fr);} }
+    .stat{border-left:4px solid #10b981}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0}
+    th,td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left}
+    th{background:#f1f5f9}
+    .status{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;display:inline-block}
+    .s-new{background:rgba(59,130,246,.12); color:#1d4ed8}
+    .s-proc{background:rgba(245,158,11,.15); color:#b45309}
+    .s-done{background:rgba(16,185,129,.15); color:#047857}
+    .s-rev{background:rgba(139,69,19,.15); color:#8b4513}
+    .modal{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:50}
+    .modal.show{display:flex}
+    .modal .box{background:#fff; border-radius:12px; padding:20px; width:min(520px, 94vw); border:1px solid #e2e8f0}
+    .row{display:flex; gap:10px; justify-content:flex-end; margin-top:14px}
+    select,input,textarea{width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc}
+    label{display:block; margin:8px 0 4px; font-weight:600}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div><strong>🏢 OGA</strong> — Portal Cliente</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="userName" style="font-weight:700;"></span>
+      <span id="userOrg" style="opacity:.75;"></span>
+      <button class="btn btn-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="grid grid-3">
+      <div class="card stat"><div style="font-size:26px;font-weight:800" id="total-tramites">0</div><div>Trámites Totales</div></div>
+      <div class="card stat"><div style="font-size:26px;font-weight:800" id="pending-tramites">0</div><div>En Proceso</div></div>
+      <div class="card stat"><div style="font-size:26px;font-weight:800" id="completed-tramites">0</div><div>Completados</div></div>
+    </section>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>📋 Mis Trámites</h3>
+        <div>
+          <button class="btn btn-success" onclick="openNewTramite()">➕ Nuevo Trámite</button>
+          <button class="btn btn-primary" onclick="loadTramites()">🔄 Actualizar</button>
+        </div>
+      </div>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Tipo</th><th>Estado</th><th>Oficial</th><th>Creado</th><th>Actualizado</th><th>Acciones</th></tr></thead>
+          <tbody id="misTramites"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>📞 Soporte y Comunicación</h3>
+      <p style="margin-bottom:14px; color:#64748b;">¿Necesitas ayuda con algún trámite? Ponte en contacto con nuestros oficiales.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="generalChat()">💬 Chat General</button>
+        <button class="btn btn-warning" onclick="viewGuides()">📖 Guías y Documentos</button>
+        <button class="btn" style="background:#6366f1;color:#fff" onclick="contactSupport()">📧 Contactar Soporte</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Nuevo Trámite -->
+  <div class="modal" id="newTramiteModal">
+    <div class="box">
+      <h3>📝 Solicitar Nuevo Trámite</h3>
+      <label for="tipoTramite">Tipo de Trámite</label>
+      <select id="tipoTramite">
+        <option value="">Selecciona el tipo de trámite...</option>
+        <option value="Acreditación Inicial">Acreditación Inicial</option>
+        <option value="Renovación de Acreditación">Renovación de Acreditación</option>
+        <option value="Extensión de Alcance">Extensión de Alcance</option>
+        <option value="Modificación de Datos">Modificación de Datos</option>
+        <option value="Suspensión Temporal">Suspensión Temporal</option>
+        <option value="Cancelación Voluntaria">Cancelación Voluntaria</option>
+      </select>
+      <label for="descripcion">Descripción del Trámite</label>
+      <textarea id="descripcion" rows="4" placeholder="Describe detalladamente tu solicitud..."></textarea>
+      <label for="urgencia">Nivel de Urgencia</label>
+      <select id="urgencia">
+        <option value="Normal">Normal</option>
+        <option value="Alta">Alta</option>
+        <option value="Crítica">Crítica</option>
+      </select>
+      <div class="row">
+        <button class="btn" onclick="closeModal('newTramiteModal')">Cancelar</button>
+        <button class="btn btn-success" onclick="submitTramite()">📤 Enviar Solicitud</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalle Trámite -->
+  <div class="modal" id="detailModal">
+    <div class="box">
+      <h3 id="detailTitle">Detalle del Trámite</h3>
+      <div id="detailContent"></div>
+      <div class="row">
+        <button class="btn" onclick="closeModal('detailModal')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL='https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    const BASE='https://jhons2004.github.io/TramitesOGA';
+    let user=null, misTramites=[];
+
+    function goLogin(){ location.href = `${BASE}/index.html`; }
+    function logout(){ localStorage.removeItem('oga-user'); localStorage.removeItem('oga-user-type'); goLogin(); }
+    
+    async function callAPI(action, params={}){
+      const u=new URL(API_URL); u.searchParams.append('action',action);
+      Object.entries(params).forEach(([k,v])=> v!=null && u.searchParams.append(k,v));
+      const r=await fetch(u); if(!r.ok) throw new Error(r.status); return r.json();
+    }
+
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const raw=localStorage.getItem('oga-user'); 
+      if(!raw) return goLogin();
+      user = JSON.parse(raw);
+      const userType = localStorage.getItem('oga-user-type');
+      if(userType !== 'cliente') { alert('Acceso denegado'); return goLogin(); }
+      
+      document.getElementById('userName').textContent = user.contacto || user.nombre || '';
+      document.getElementById('userOrg').textContent = `(${user.empresa || user.organizacion || 'Cliente'})`;
+      await loadTramites();
+    });
+
+    async function loadTramites(){
+      try {
+        const ts = await callAPI('getTicketsByClient', { 
+          clientEmail: user.email, 
+          clientName: user.empresa || user.organizacion,
+          contacto: user.contacto || user.nombre
+        });
+        misTramites = ts;
+        renderTramites(ts);
+        updateStats(ts);
+      } catch(e) {
+        console.error('Error loading tramites:', e);
+        // Mostrar datos de ejemplo si la API no responde
+        const ejemplos = [
+          {id:'T001', tipoTramite:'Acreditación Inicial', estado:'En Proceso', oficialAsignado:'Ana García', fechaCreacion:'2024-01-15', fechaActualizacion:'2024-01-20'},
+          {id:'T002', tipoTramite:'Renovación de Acreditación', estado:'Completado', oficialAsignado:'Carlos Méndez', fechaCreacion:'2024-01-10', fechaActualizacion:'2024-01-18'}
+        ];
+        misTramites = ejemplos;
+        renderTramites(ejemplos);
+        updateStats(ejemplos);
+      }
+    }
+
+    function updateStats(ts){
+      document.getElementById('total-tramites').textContent = ts.length;
+      document.getElementById('pending-tramites').textContent = ts.filter(t=>!['Completado','Cancelado'].includes(t.estado)).length;
+      document.getElementById('completed-tramites').textContent = ts.filter(t=>t.estado==='Completado').length;
+    }
+
+    function renderTramites(ts){
+      document.getElementById('misTramites').innerHTML = ts.map(t=>`
+        <tr>
+          <td>${t.id}</td>
+          <td>${t.tipoTramite}</td>
+          <td><span class="status ${getStatusClass(t.estado)}">${t.estado}</span></td>
+          <td>${t.oficialAsignado || 'Sin asignar'}</td>
+          <td>${new Date(t.fechaCreacion).toLocaleDateString()}</td>
+          <td>${new Date(t.fechaActualizacion).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-primary" onclick="viewDetail('${t.id}')">👁️ Ver</button>
+            ${t.oficialAsignado ? `<button class="btn btn-success" onclick="chatTramite('${t.id}')">💬 Chat</button>` : ''}
+          </td>
+        </tr>`).join('');
+    }
+
+    function getStatusClass(estado){
+      switch(estado){
+        case 'Nuevo': return 's-new';
+        case 'En Proceso': case 'En Revisión': case 'Pendiente Documentos': return 's-proc';
+        case 'Completado': return 's-done';
+        default: return 's-rev';
+      }
+    }
+
+    function openNewTramite(){ document.getElementById('newTramiteModal').classList.add('show'); }
+    function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+    async function submitTramite(){
+      const tipo = document.getElementById('tipoTramite').value;
+      const desc = document.getElementById('descripcion').value;
+      const urgencia = document.getElementById('urgencia').value;
+      
+      if(!tipo || !desc) return alert('Por favor completa todos los campos requeridos');
+
+      try {
+        const r = await callAPI('createTicket', {
+          tipoTramite: tipo,
+          descripcion: desc,
+          urgencia: urgencia,
+          empresa: user.empresa || user.organizacion,
+          contacto: user.contacto || user.nombre,
+          email: user.email
+        });
+        
+        if(r.success){
+          alert('✅ Trámite enviado exitosamente. Se le asignará un oficial pronto.');
+          closeModal('newTramiteModal');
+          // Limpiar formulario
+          document.getElementById('tipoTramite').value = '';
+          document.getElementById('descripcion').value = '';
+          document.getElementById('urgencia').value = 'Normal';
+          await loadTramites();
+        } else {
+          alert('❌ Error al enviar el trámite: ' + (r.message || 'Error desconocido'));
+        }
+      } catch(e) {
+        alert('❌ Error de conexión. Por favor intenta nuevamente.');
+        console.error('Error submitting tramite:', e);
+      }
+    }
+
+    function viewDetail(id){
+      const tramite = misTramites.find(t => t.id === id);
+      if(!tramite) return;
+      
+      document.getElementById('detailTitle').textContent = `Trámite ${id}`;
+      document.getElementById('detailContent').innerHTML = `
+        <div style="margin-bottom:10px;"><strong>Tipo:</strong> ${tramite.tipoTramite}</div>
+        <div style="margin-bottom:10px;"><strong>Estado:</strong> <span class="status ${getStatusClass(tramite.estado)}">${tramite.estado}</span></div>
+        <div style="margin-bottom:10px;"><strong>Oficial Asignado:</strong> ${tramite.oficialAsignado || 'Sin asignar'}</div>
+        <div style="margin-bottom:10px;"><strong>Fecha de Creación:</strong> ${new Date(tramite.fechaCreacion).toLocaleDateString()}</div>
+        <div style="margin-bottom:10px;"><strong>Última Actualización:</strong> ${new Date(tramite.fechaActualizacion).toLocaleDateString()}</div>
+        ${tramite.descripcion ? `<div style="margin-bottom:10px;"><strong>Descripción:</strong><br>${tramite.descripcion}</div>` : ''}
+        ${tramite.comentarios ? `<div style="margin-bottom:10px;"><strong>Comentarios:</strong><br>${tramite.comentarios}</div>` : ''}
+      `;
+      document.getElementById('detailModal').classList.add('show');
+    }
+
+    function chatTramite(id){ 
+      localStorage.setItem('activeCaseId', id); 
+      location.href = `${BASE}/chat.html?case=${encodeURIComponent(id)}`; 
+    }
+
+    function generalChat(){ 
+      localStorage.removeItem('activeCaseId');
+      location.href = `${BASE}/chat.html`; 
+    }
+
+    function viewGuides(){ 
+      alert('📖 Próximamente: Sección de guías y documentos de ayuda'); 
+    }
+
+    function contactSupport(){ 
+      alert('📧 Para soporte directo, contacta a: soporte@oga.gov.gt'); 
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>💬 Chat OGA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#f8fafc;color:#0f172a;height:100vh;display:flex;flex-direction:column}
+    .header{background:#fff;border-bottom:1px solid #e2e8f0; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;flex-shrink:0}
+    .chat-container{flex:1;display:flex;flex-direction:column;max-width:800px;margin:0 auto;width:100%;padding:0 16px}
+    .chat-header{background:#fff;border:1px solid #e2e8f0;border-radius:12px 12px 0 0;padding:16px;margin-top:16px}
+    .chat-messages{background:#fff;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;flex:1;overflow-y:auto;padding:16px;min-height:400px;max-height:500px}
+    .chat-input{background:#fff;border:1px solid #e2e8f0;border-radius:0 0 12px 12px;padding:16px;display:flex;gap:10px;align-items:flex-end}
+    .message{margin-bottom:16px;display:flex;gap:10px}
+    .message.own{flex-direction:row-reverse}
+    .message .avatar{width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+    .message .content{max-width:70%;background:#f1f5f9;padding:12px 16px;border-radius:16px;position:relative}
+    .message.own .content{background:#2563eb;color:#fff}
+    .message .content .sender{font-size:12px;font-weight:600;margin-bottom:4px;opacity:.8}
+    .message .content .time{font-size:11px;opacity:.6;margin-top:6px}
+    .message .content .text{line-height:1.4}
+    .message.system{justify-content:center}
+    .message.system .content{background:#fef3c7;color:#92400e;max-width:90%;text-align:center;font-style:italic}
+    .btn{border:none;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
+    .btn-primary{background:#2563eb;color:#fff}
+    .btn-danger{background:#ef4444;color:#fff}
+    .btn-secondary{background:#6b7280;color:#fff}
+    input[type="text"],textarea{flex:1;padding:12px;border:1px solid #e2e8f0;border-radius:10px;resize:none;font-family:inherit}
+    .case-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;margin-bottom:10px;font-size:14px}
+    .status-indicator{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+    .status-online{background:#10b981}
+    .status-offline{background:#6b7280}
+    .typing{font-style:italic;opacity:.7;color:#6b7280;font-size:14px;margin-top:8px}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div><strong>💬 OGA</strong> — Chat de Soporte</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="userName" style="font-weight:700;"></span>
+      <span id="userRole" style="opacity:.75;"></span>
+      <button class="btn btn-secondary" onclick="goBack()">← Volver</button>
+      <button class="btn btn-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="chat-container">
+    <div class="chat-header">
+      <div id="chatTitle" style="font-size:18px;font-weight:700;margin-bottom:8px;">Chat General</div>
+      <div id="chatParticipants" style="color:#64748b;font-size:14px;">
+        <span class="status-indicator status-online"></span>En línea
+      </div>
+      <div id="caseInfo" class="case-info" style="display:none;">
+        <strong>Caso:</strong> <span id="caseId"></span> | <strong>Estado:</strong> <span id="caseStatus"></span>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="messages">
+      <div class="message system">
+        <div class="content">
+          <div class="text">Bienvenido al chat de soporte OGA. Un representante se conectará contigo pronto.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <textarea id="messageInput" rows="1" placeholder="Escribe tu mensaje..." style="min-height:44px;max-height:120px"></textarea>
+      <button class="btn btn-primary" onclick="sendMessage()" id="sendBtn">📤 Enviar</button>
+    </div>
+    
+    <div id="typingIndicator" class="typing" style="display:none;padding:0 16px;">
+      <span id="typingUser"></span> está escribiendo...
+    </div>
+  </main>
+
+  <script>
+    const API_URL='https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    const BASE='https://jhons2004.github.io/TramitesOGA';
+    
+    let user = null;
+    let userType = null;
+    let activeCaseId = null;
+    let messages = [];
+    let lastMessageCheck = Date.now();
+
+    function goLogin(){ location.href = `${BASE}/index.html`; }
+    function logout(){ localStorage.removeItem('oga-user'); localStorage.removeItem('oga-user-type'); goLogin(); }
+    
+    function goBack(){
+      const type = localStorage.getItem('oga-user-type');
+      if(type === 'interno'){
+        const user = JSON.parse(localStorage.getItem('oga-user') || '{}');
+        if(['Admin','Jefe OGA','Director'].includes(user.rol)){
+          location.href = `${BASE}/admin-dashboard.html`;
+        } else {
+          location.href = `${BASE}/oficial-dashboard.html`;
+        }
+      } else {
+        location.href = `${BASE}/cliente-dashboard.html`;
+      }
+    }
+
+    async function callAPI(action, params={}){
+      const u=new URL(API_URL); u.searchParams.append('action',action);
+      Object.entries(params).forEach(([k,v])=> v!=null && u.searchParams.append(k,v));
+      const r=await fetch(u); if(!r.ok) throw new Error(r.status); return r.json();
+    }
+
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const raw=localStorage.getItem('oga-user'); 
+      if(!raw) return goLogin();
+      
+      user = JSON.parse(raw);
+      userType = localStorage.getItem('oga-user-type');
+      activeCaseId = localStorage.getItem('activeCaseId') || new URLSearchParams(location.search).get('case');
+      
+      document.getElementById('userName').textContent = user.nombre || user.contacto || '';
+      document.getElementById('userRole').textContent = userType === 'interno' ? `(${user.rol})` : '(Cliente)';
+      
+      await initChat();
+      setupMessageInput();
+      startMessagePolling();
+    });
+
+    async function initChat(){
+      if(activeCaseId){
+        try {
+          // Cargar información del caso
+          const caseData = await callAPI('getCaseDetails', { caseId: activeCaseId });
+          if(caseData.success){
+            document.getElementById('chatTitle').textContent = `Chat - Caso ${activeCaseId}`;
+            document.getElementById('caseInfo').style.display = 'block';
+            document.getElementById('caseId').textContent = activeCaseId;
+            document.getElementById('caseStatus').textContent = caseData.case?.estado || 'Desconocido';
+            
+            const participants = userType === 'interno' 
+              ? `Cliente: ${caseData.case?.empresa || 'N/A'}`
+              : `Oficial: ${caseData.case?.oficialAsignado || 'Sin asignar'}`;
+            document.getElementById('chatParticipants').innerHTML = `<span class="status-indicator status-online"></span>${participants}`;
+          }
+        } catch(e) {
+          console.warn('No se pudo cargar información del caso');
+        }
+        
+        // Cargar mensajes del caso
+        await loadCaseMessages();
+      } else {
+        // Chat general
+        document.getElementById('chatTitle').textContent = 'Chat General de Soporte';
+        addSystemMessage('Bienvenido al chat general. ¿En qué podemos ayudarte?');
+      }
+    }
+
+    async function loadCaseMessages(){
+      try {
+        const result = await callAPI('getChatMessages', { 
+          caseId: activeCaseId,
+          since: 0 
+        });
+        
+        if(result.success && result.messages){
+          messages = result.messages;
+          renderMessages();
+        }
+      } catch(e) {
+        console.warn('No se pudieron cargar mensajes:', e);
+        addSystemMessage('No se pudieron cargar mensajes anteriores. Puedes comenzar a chatear.');
+      }
+    }
+
+    function renderMessages(){
+      const container = document.getElementById('messages');
+      container.innerHTML = '';
+      
+      messages.forEach(msg => {
+        addMessageToDOM(msg);
+      });
+      
+      scrollToBottom();
+    }
+
+    function addMessageToDOM(msg){
+      const container = document.getElementById('messages');
+      const isOwnMessage = (userType === 'interno' && msg.sender === user.nombre) || 
+                          (userType === 'cliente' && msg.sender === (user.contacto || user.nombre));
+      
+      const messageEl = document.createElement('div');
+      messageEl.className = `message ${isOwnMessage ? 'own' : ''}`;
+      
+      const avatar = msg.sender?.charAt(0)?.toUpperCase() || '?';
+      const time = new Date(msg.timestamp).toLocaleTimeString();
+      
+      messageEl.innerHTML = `
+        <div class="avatar">${avatar}</div>
+        <div class="content">
+          <div class="sender">${msg.sender}</div>
+          <div class="text">${escapeHtml(msg.message)}</div>
+          <div class="time">${time}</div>
+        </div>
+      `;
+      
+      container.appendChild(messageEl);
+    }
+
+    function addSystemMessage(text){
+      const container = document.getElementById('messages');
+      const messageEl = document.createElement('div');
+      messageEl.className = 'message system';
+      messageEl.innerHTML = `
+        <div class="content">
+          <div class="text">${escapeHtml(text)}</div>
+        </div>
+      `;
+      container.appendChild(messageEl);
+      scrollToBottom();
+    }
+
+    function setupMessageInput(){
+      const input = document.getElementById('messageInput');
+      const sendBtn = document.getElementById('sendBtn');
+      
+      input.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      input.addEventListener('input', () => {
+        // Auto-resize textarea
+        input.style.height = 'auto';
+        input.style.height = input.scrollHeight + 'px';
+      });
+    }
+
+    async function sendMessage(){
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      
+      if(!message) return;
+      
+      const senderName = userType === 'interno' ? user.nombre : (user.contacto || user.nombre);
+      
+      // Agregar mensaje localmente primero
+      const newMessage = {
+        sender: senderName,
+        message: message,
+        timestamp: new Date().toISOString(),
+        userType: userType
+      };
+      
+      messages.push(newMessage);
+      addMessageToDOM(newMessage);
+      scrollToBottom();
+      
+      // Limpiar input
+      input.value = '';
+      input.style.height = 'auto';
+      
+      // Enviar al servidor
+      try {
+        if(activeCaseId) {
+          await callAPI('sendChatMessage', {
+            caseId: activeCaseId,
+            sender: senderName,
+            message: message,
+            userType: userType
+          });
+        } else {
+          // Para chat general, podríamos implementar un sistema diferente
+          console.log('Mensaje enviado al chat general:', newMessage);
+        }
+      } catch(e) {
+        console.error('Error enviando mensaje:', e);
+        addSystemMessage('❌ Error enviando mensaje. Por favor intenta nuevamente.');
+      }
+    }
+
+    function startMessagePolling(){
+      if(!activeCaseId) return;
+      
+      setInterval(async () => {
+        try {
+          const result = await callAPI('getChatMessages', { 
+            caseId: activeCaseId,
+            since: lastMessageCheck 
+          });
+          
+          if(result.success && result.messages && result.messages.length > 0){
+            const newMessages = result.messages.filter(msg => 
+              new Date(msg.timestamp) > new Date(lastMessageCheck)
+            );
+            
+            newMessages.forEach(msg => {
+              const senderName = userType === 'interno' ? user.nombre : (user.contacto || user.nombre);
+              if(msg.sender !== senderName) { // Solo agregar mensajes de otros
+                messages.push(msg);
+                addMessageToDOM(msg);
+              }
+            });
+            
+            if(newMessages.length > 0) {
+              scrollToBottom();
+              lastMessageCheck = Date.now();
+            }
+          }
+        } catch(e) {
+          console.warn('Error polling messages:', e);
+        }
+      }, 3000); // Poll every 3 seconds
+    }
+
+    function scrollToBottom(){
+      const container = document.getElementById('messages');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Simular mensajes de ejemplo si no hay caso activo
+    if(!activeCaseId) {
+      setTimeout(() => {
+        addSystemMessage('👋 ¡Hola! Soy un asistente virtual. ¿En qué puedo ayudarte hoy?');
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
