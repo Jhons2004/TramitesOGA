@@ -429,7 +429,7 @@
   </div>
 
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyLZ0usSR8hvItj_V9Hn7bSpgI8lk4TEa1SC_qLlvS53oO2OOnRy8ndRhE2_ngkDT-F/exec';
     let currentUser = null;
 
     // Inicialización
@@ -437,7 +437,7 @@
       // Verificar usuario logueado
       const userData = localStorage.getItem('currentUser');
       if (!userData) {
-        window.location.href = 'https://sites.google.com/oga.org.gt/tramitesoga/login';
+        window.location.href = 'index.html';
         return;
       }
 
@@ -446,7 +446,7 @@
       // Verificar permisos de administrador
       if (!['Admin', 'Jefe OGA', 'Director'].includes(currentUser.rol)) {
         alert('Acceso denegado. No tienes permisos de administrador.');
-        window.location.href = 'https://sites.google.com/oga.org.gt/tramitesoga/login';
+        window.location.href = 'index.html';
         return;
       }
 
@@ -625,7 +625,7 @@
     function logout() {
       localStorage.removeItem('currentUser');
       localStorage.removeItem('userType');
-      window.location.href = 'https://sites.google.com/oga.org.gt/tramitesoga/login';
+      window.location.href = 'index.html';
     }
 
     // Función API

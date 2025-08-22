@@ -662,7 +662,7 @@
 
   <script>
     // ========== CONFIGURACIÓN ==========
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyLZ0usSR8hvItj_V9Hn7bSpgI8lk4TEa1SC_qLlvS53oO2OOnRy8ndRhE2_ngkDT-F/exec';
     
     let debugMode = false;
     let titleClickCount = 0;
@@ -671,11 +671,11 @@
 
     // URLs por rol
     const DASHBOARD_URLS = {
-      'Admin': 'https://sites.google.com/oga.org.gt/tramitesoga/admin-dashboard',
-      'Jefe OGA': 'https://sites.google.com/oga.org.gt/tramitesoga/admin-dashboard',
-      'Director': 'https://sites.google.com/oga.org.gt/tramitesoga/admin-dashboard',
-      'Oficial de Acreditación': 'https://sites.google.com/oga.org.gt/tramitesoga/oficial-dashboard',
-      'Cliente': 'https://sites.google.com/oga.org.gt/tramitesoga/cliente-dashboard'
+      'Admin': 'admin-dashboard.html',
+      'Jefe OGA': 'admin-dashboard.html',
+      'Director': 'admin-dashboard.html',
+      'Oficial de Acreditación': 'oficial-dashboard.html',
+      'Cliente': 'cliente-dashboard.html'
     };
 
     // ========== AUTO-SALIDA DE IFRAME EMBEBIDO ==========
@@ -683,7 +683,7 @@
       if (window !== window.top || window.location.hostname.includes('googleusercontent.com')) {
         console.log('🚨 Detectado iframe embebido - forzando salida automática');
         
-        const mainLoginUrl = 'https://sites.google.com/oga.org.gt/tramitesoga/login';
+        const mainLoginUrl = 'https://jhons2004.github.io/TramitesOGA/';
         
         try {
           if (window.top && window.top !== window) {
