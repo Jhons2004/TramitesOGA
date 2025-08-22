@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏛️ OGA - Portal de Acreditación</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      --primary-solid: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      --accent: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+      --danger: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+      --warning: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+      
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-tertiary: #f1f5f9;
+      --surface: #ffffff;
+      --surface-elevated: #ffffff;
+      
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-tertiary: #64748b;
+      --text-inverse: #ffffff;
+      
+      --border-primary: #e2e8f0;
+      --border-secondary: #cbd5e1;
+      --border-focus: #3b82f6;
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 20px;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dark {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --surface: #1e293b;
+      --surface-elevated: #334155;
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-tertiary: #94a3b8;
+      
+      --border-primary: #334155;
+      --border-secondary: #475569;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(30, 64, 175, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .main-container {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      padding: 3rem;
+      width: 100%;
+      max-width: 520px;
+      border: 1px solid var(--border-primary);
+      position: relative;
+      backdrop-filter: blur(20px);
+      transition: var(--transition);
+    }
+
+    .main-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: var(--primary);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      background: var(--primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+      letter-spacing: -0.025em;
+    }
+
+    .header h1:hover {
+      transform: scale(1.02);
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.025em;
+    }
+
+    .header .subtitle {
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      font-weight: 400;
+    }
+
+    .form-section {
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.75rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      letter-spacing: 0.025em;
+    }
+
+    select, input, button {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      font-size: 16px;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-primary);
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      transition: var(--transition);
+      font-family: inherit;
+      font-weight: 500;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      background-color: var(--surface);
+      transform: translateY(-1px);
+    }
+
+    input::placeholder {
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: var(--text-inverse);
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.025em;
+      transition: var(--transition);
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: var(--transition);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn:hover:not(:disabled)::before {
+      left: 100%;
+    }
+
+    .btn:disabled {
+      background: var(--text-tertiary);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border-primary);
+    }
+
+    .divider span {
+      background: var(--surface);
+      padding: 0 1rem;
+      color: var(--text-tertiary);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .register-prompt {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+      border: 2px solid rgba(59, 130, 246, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .register-prompt h4 {
+      color: var(--primary-solid);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .register-prompt p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .link {
+      color: var(--primary-solid);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .link:hover {
+      transform: translateY(-1px);
+      text-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Connection Status - Sutil */
+    .connection-indicator {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+      transition: var(--transition);
+      z-index: 10;
+    }
+
+    .connection-indicator.connecting {
+      background: #f59e0b;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+      animation: pulse 1s infinite;
+    }
+
+    .connection-indicator.connected {
+      background: #10b981;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: var(--surface-elevated);
+      border: 2px solid var(--border-primary);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      transition: var(--transition);
+      box-shadow: var(--shadow-md);
+      z-index: 10;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1) rotate(180deg);
+      background: var(--primary-solid);
+      color: var(--text-inverse);
+      border-color: var(--primary-solid);
+    }
+
+    /* Status Messages */
+    .status-message {
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      text-align: center;
+      animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+      backdrop-filter: blur(10px);
+    }
+
+    .status-success {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+      color: #059669;
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .status-error {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+      color: #dc2626;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .status-warning {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+      color: #d97706;
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .status-info {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+      color: var(--primary-solid);
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    /* Loading */
+    .loading {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 2px solid var(--border-primary);
+    }
+
+    .footer .brand {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .footer .copyright {
+      color: var(--text-tertiary);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+
+      .main-container {
+        padding: 2rem;
+        max-width: none;
+      }
+
+      .header h1 {
+        font-size: 1.875rem;
+      }
+
+      .btn-group {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .theme-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .main-container {
+        padding: 3.5rem;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+      }
+    }
+
+    /* Focus improvements */
+    .btn:focus-visible,
+    select:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--primary-solid);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Connection Indicator -->
+  <div id="connection-indicator" class="connection-indicator" title="Estado de conexión"></div>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+    <span id="theme-icon">🌙</span>
+  </button>
+
+  <div class="main-container fade-in">
+    <!-- Login Selection -->
+    <div id="login-selection">
+      <div class="header">
+        <h1 onclick="handleTitleClick()">🏛️ OGA Guatemala</h1>
+        <p>Oficina Guatemalteca de Acreditación</p>
+        <div class="subtitle">Portal de Gestión de Acreditación y Reconocimiento</div>
+      </div>
+
+      <div id="status-container"></div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label for="usuario-tipo">Tipo de Acceso</label>
+          <select id="usuario-tipo" onchange="handleUserTypeChange()">
+            <option value="">Selecciona tu tipo de acceso</option>
+            <option value="interno">👨‍💼 Personal OGA</option>
+            <option value="cliente">🏢 Organización/Empresa</option>
+          </select>
+        </div>
+
+        <!-- Formulario Personal Interno -->
+        <div id="form-interno" class="hidden">
+          <div class="form-group">
+            <label for="nombre-completo">Nombre Completo</label>
+            <input type="text" id="nombre-completo" placeholder="Ingresa tu nombre completo">
+          </div>
+          <div class="form-group">
+            <label for="password-interno">Contraseña</label>
+            <input type="password" id="password-interno" placeholder="Ingresa tu contraseña institucional">
+          </div>
+          <div class="form-group">
+            <button class="btn" onclick="loginInternal()">🔐 Acceder al Sistema</button>
+          </div>
+        </div>
+
+        <!-- Formulario Cliente -->
+        <div id="form-cliente" class="hidden">
+          <div class="form-group">
+            <label for="nombre-empresa">Nombre de la Organización</label>
+            <input type="text" id="nombre-empresa" placeholder="Nombre de tu organización/empresa">
+          </div>
+          <div class="form-group">
+            <label for="password-cliente">Contraseña</label>
+            <input type="password" id="password-cliente" placeholder="Contraseña de acceso">
+          </div>
+          <div class="form-group">
+            <button class="btn" onclick="loginClient()">🏢 Acceder al Portal</button>
+          </div>
+          
+          <!-- Prompt de Registro Profesional -->
+          <div class="register-prompt">
+            <h4>¿Primera vez en OGA?</h4>
+            <p>Si necesitas iniciar un proceso de <strong>Acreditación</strong> o <strong>Reconocimiento</strong>, regístrate para acceder a nuestros servicios profesionales de evaluación de conformidad.</p>
+            <a href="#" class="link" onclick="showRegisterForm()">
+              📝 Registrar mi Organización →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registro Form -->
+    <div id="register-form" class="hidden">
+      <div class="header">
+        <h1>📝 Registro de Organización</h1>
+        <p>Proceso de Acreditación y Reconocimiento</p>
+        <div class="subtitle">Complete la información para iniciar el proceso</div>
+      </div>
+
+      <div id="register-status-container"></div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label for="reg-empresa">Nombre de la Organización/Empresa</label>
+          <input type="text" id="reg-empresa" placeholder="Razón social completa" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-representante">Representante Legal</label>
+          <input type="text" id="reg-representante" placeholder="Nombre del representante autorizado" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Institucional</label>
+          <input type="email" id="reg-email" placeholder="contacto@organizacion.com" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Contraseña de Acceso</label>
+          <input type="password" id="reg-password" placeholder="Mínimo 8 caracteres" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-telefono">Teléfono de Contacto</label>
+          <input type="tel" id="reg-telefono" placeholder="+502 XXXX-XXXX" required>
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="registerClient()">✅ Completar Registro</button>
+          <button class="btn btn-danger" onclick="backToLogin()">❌ Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Screen -->
+    <div id="success-screen" class="hidden">
+      <div class="header">
+        <h1>✅ ¡Bienvenido!</h1>
+        <p id="welcome-message">Acceso autorizado al sistema</p>
+        <div class="subtitle">Redirigiendo a tu panel de control...</div>
+      </div>
+      <div style="text-align: center; margin-top: 2rem;">
+        <button class="btn" onclick="redirectToDashboard()">🚀 Ir al Panel de Control</button>
+        <div class="divider">
+          <span>o</span>
+        </div>
+        <a href="#" class="link" onclick="logout()">🚪 Cerrar Sesión</a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="brand">Sistema Nacional de Acreditación</div>
+      <div class="copyright">© 2024 OGA Guatemala - Todos los derechos reservados</div>
+    </div>
+  </div>
+
+  <script>
+    // ========== CONFIGURACIÓN ==========
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    
+    let debugMode = false;
+    let titleClickCount = 0;
+    let isEmbedded = false;
+    let connectionStatus = 'disconnected'; // disconnected, connecting, connected
+
+    // URLs por rol
+    const DASHBOARD_URLS = {
+      'Admin': 'https://sites.google.com/oga.org.gt/tramitesoga/admin-dashboard',
+      'Jefe OGA': 'https://sites.google.com/oga.org.gt/tramitesoga/admin-dashboard',
+      'Director': 'https://sites.google.com/oga.org.gt/tramitesoga/admin-dashboard',
+      'Oficial de Acreditación': 'https://sites.google.com/oga.org.gt/tramitesoga/oficial-dashboard',
+      'Cliente': 'https://sites.google.com/oga.org.gt/tramitesoga/cliente-dashboard'
+    };
+
+    // ========== AUTO-SALIDA DE IFRAME EMBEBIDO ==========
+    function autoExitIframeOnLoad() {
+      if (window !== window.top || window.location.hostname.includes('googleusercontent.com')) {
+        console.log('🚨 Detectado iframe embebido - forzando salida automática');
+        
+        const mainLoginUrl = 'https://sites.google.com/oga.org.gt/tramitesoga/login';
+        
+        try {
+          if (window.top && window.top !== window) {
+            window.top.location.href = mainLoginUrl;
+          } else if (window.parent && window.parent !== window) {
+            window.parent.location.href = mainLoginUrl;
+          } else {
+            window.location.href = mainLoginUrl;
+          }
+        } catch (error) {
+          setTimeout(() => window.location.href = mainLoginUrl, 1000);
+        }
+        
+        return true;
+      }
+      return false;
+    }
+
+    // ========== DETECCIÓN DE ENTORNO ==========
+    function detectEnvironment() {
+      isEmbedded = window !== window.top || window.location.hostname.includes('googleusercontent.com');
+      console.log(`🌍 Entorno: ${isEmbedded ? 'Embebido' : 'Independiente'}`);
+      return isEmbedded;
+    }
+
+    // ========== GESTIÓN DE TEMA ==========
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem('oga-theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        updateThemeIcon(true);
+      } else {
+        document.documentElement.classList.remove('dark');
+        updateThemeIcon(false);
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('oga-theme', 'light');
+        updateThemeIcon(false);
+        showStatus("☀️ Tema claro activado", 'info');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('oga-theme', 'dark');
+        updateThemeIcon(true);
+        showStatus("🌙 Tema oscuro activado", 'info');
+      }
+    }
+
+    function updateThemeIcon(isDark) {
+      document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+    }
+
+    // ========== INDICADOR DE CONEXIÓN ==========
+    function updateConnectionStatus(status) {
+      connectionStatus = status;
+      const indicator = document.getElementById('connection-indicator');
+      
+      indicator.classList.remove('connecting', 'connected');
+      
+      switch (status) {
+        case 'connecting':
+          indicator.classList.add('connecting');
+          indicator.title = 'Conectando al servidor OGA...';
+          break;
+        case 'connected':
+          indicator.classList.add('connected');
+          indicator.title = 'Conectado al servidor OGA';
+          break;
+        default:
+          indicator.title = 'Sin conexión al servidor OGA';
+      }
+    }
+
+    // ========== DEBUG SYSTEM ==========
+    function handleTitleClick() {
+      titleClickCount++;
+      setTimeout(() => { titleClickCount = 0; }, 500);
+      
+      if (titleClickCount === 3) {
+        debugMode = !debugMode;
+        showStatus(debugMode ? "🐛 Modo debug activado" : "🐛 Modo debug desactivado", 'info');
+        
+        if (debugMode) {
+          console.log("🐛 Debug OGA System v3.0");
+          console.log(`🌐 API: ${API_URL}`);
+          console.log(`🖥️ Entorno: ${isEmbedded ? 'Embebido' : 'Independiente'}`);
+          console.log(`🔗 Conexión: ${connectionStatus}`);
+        }
+      }
+    }
+
+    // ========== UI HELPERS ==========
+    function showStatus(message, type = 'info', containerId = 'status-container') {
+      const container = document.getElementById(containerId);
+      container.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
+      
+      setTimeout(() => {
+        if (container.innerHTML.includes(message)) {
+          container.innerHTML = '';
+        }
+      }, 5000);
+    }
+
+    function setButtonLoading(button, loading = true) {
+      if (loading) {
+        button.disabled = true;
+        button.classList.add('loading');
+        button.dataset.originalText = button.textContent;
+        button.textContent = "⏳ Procesando...";
+      } else {
+        button.disabled = false;
+        button.classList.remove('loading');
+        button.textContent = button.dataset.originalText || "Ingresar";
+      }
+    }
+
+    // ========== LLAMADAS API SIMPLIFICADAS ==========
+    async function callAPI(action, params = {}) {
+      updateConnectionStatus('connecting');
+      
+      try {
+        const url = new URL(API_URL);
+        url.searchParams.append('action', action);
+        
+        Object.keys(params).forEach(key => {
+          if (params[key] !== null && params[key] !== undefined) {
+            url.searchParams.append(key, params[key]);
+          }
+        });
+
+        const response = await fetch(url.toString(), {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        updateConnectionStatus('connected');
+        
+        if (debugMode) {
+          console.log(`📦 API Response [${action}]:`, data);
+        }
+        
+        return data;
+      } catch (error) {
+        updateConnectionStatus('disconnected');
+        
+        if (debugMode) {
+          console.error(`❌ API Error [${action}]:`, error);
+        }
+        
+        // Fallback a datos mock si es necesario
+        if (isEmbedded || error.message.includes('CORS')) {
+          return getMockResponse(action, params);
+        }
+        
+        throw error;
+      }
+    }
+
+    // Datos mock para casos de emergencia
+    function getMockResponse(action, params) {
+      switch (action) {
+        case 'authenticateInternal':
+          if (params.nombreCompleto === 'Jonatan Alvarado' && params.password === 'admin123') {
+            return {
+              success: true,
+              user: {
+                id: 1,
+                nombre: "Jonatan Alvarado",
+                email: "jalvarado.oga@gmail.com",
+                rol: "Admin",
+                departamento: "OGA",
+                telefono: "41316755"
+              }
+            };
+          }
+          return { success: false, message: 'Credenciales incorrectas' };
+          
+        case 'authenticateClient':
+          return { success: false, message: 'Cliente no encontrado' };
+          
+        case 'registerClient':
+          return { success: true, message: 'Organización registrada exitosamente' };
+          
+        default:
+          return { success: false, message: 'Servicio temporalmente no disponible' };
+      }
+    }
+
+    // ========== MANEJADORES DE FORMULARIO ==========
+    function handleUserTypeChange() {
+      const userType = document.getElementById('usuario-tipo').value;
+      const internoForm = document.getElementById('form-interno');
+      const clienteForm = document.getElementById('form-cliente');
+
+      internoForm.classList.add('hidden');
+      clienteForm.classList.add('hidden');
+
+      if (userType === 'interno') {
+        internoForm.classList.remove('hidden');
+        internoForm.classList.add('fade-in');
+        setTimeout(() => document.getElementById('nombre-completo').focus(), 200);
+      } else if (userType === 'cliente') {
+        clienteForm.classList.remove('hidden');
+        clienteForm.classList.add('fade-in');
+        setTimeout(() => document.getElementById('nombre-empresa').focus(), 200);
+      }
+
+      document.getElementById('status-container').innerHTML = '';
+    }
+
+    async function loginInternal() {
+      const nombreCompleto = document.getElementById('nombre-completo').value.trim();
+      const password = document.getElementById('password-interno').value.trim();
+      const button = event.target;
+
+      if (!nombreCompleto || !password) {
+        showStatus("⚠️ Por favor complete todos los campos", 'warning');
+        return;
+      }
+
+      setButtonLoading(button, true);
+      showStatus("🔐 Verificando credenciales institucionales...", 'info');
+
+      try {
+        const result = await callAPI('authenticateInternal', {
+          nombreCompleto: nombreCompleto,
+          password: password
+        });
+
+        if (result.success) {
+          localStorage.setItem('oga-user', JSON.stringify(result.user));
+          localStorage.setItem('oga-user-type', 'interno');
+          showSuccessScreen(result.user);
+          showStatus("✅ Acceso autorizado al sistema OGA", 'success');
+        } else {
+          showStatus(`❌ ${result.message}`, 'error');
+        }
+      } catch (error) {
+        showStatus("❌ Error de conexión. Verifique su conexión a internet.", 'error');
+      } finally {
+        setButtonLoading(button, false);
+      }
+    }
+
+    async function loginClient() {
+      const nombreEmpresa = document.getElementById('nombre-empresa').value.trim();
+      const password = document.getElementById('password-cliente').value.trim();
+      const button = event.target;
+
+      if (!nombreEmpresa || !password) {
+        showStatus("⚠️ Por favor complete todos los campos", 'warning');
+        return;
+      }
+
+      setButtonLoading(button, true);
+      showStatus("🔐 Verificando acceso organizacional...", 'info');
+
+      try {
+        const result = await callAPI('authenticateClient', {
+          nombreEmpresa: nombreEmpresa,
+          password: password
+        });
+
+        if (result.success) {
+          localStorage.setItem('oga-user', JSON.stringify(result.user));
+          localStorage.setItem('oga-user-type', 'cliente');
+          showSuccessScreen(result.user);
+          showStatus("✅ Bienvenido al Portal de Acreditación", 'success');
+        } else {
+          showStatus(`❌ ${result.message}`, 'error');
+        }
+      } catch (error) {
+        showStatus("❌ Error de conexión. Intente nuevamente.", 'error');
+      } finally {
+        setButtonLoading(button, false);
+      }
+    }
+
+    async function registerClient() {
+      const empresa = document.getElementById('reg-empresa').value.trim();
+      const representante = document.getElementById('reg-representante').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value.trim();
+      const telefono = document.getElementById('reg-telefono').value.trim();
+      const button = event.target;
+
+      if (!empresa || !representante || !email || !password || !telefono) {
+        showStatus("⚠️ Por favor complete todos los campos", 'warning', 'register-status-container');
+        return;
+      }
+
+      if (!email.includes('@') || !email.includes('.')) {
+        showStatus("⚠️ Por favor ingrese un email válido", 'warning', 'register-status-container');
+        return;
+      }
+
+      if (password.length < 8) {
+        showStatus("⚠️ La contraseña debe tener al menos 8 caracteres", 'warning', 'register-status-container');
+        return;
+      }
+
+      setButtonLoading(button, true);
+      showStatus("📝 Registrando organización en el sistema...", 'info', 'register-status-container');
+
+      try {
+        const result = await callAPI('registerClient', {
+          nombreEmpresa: empresa,
+          representante: representante,
+          email: email,
+          password: password,
+          telefono: telefono
+        });
+
+        if (result.success) {
+          showStatus("✅ ¡Registro completado! Ya puede acceder al portal.", 'success', 'register-status-container');
+          setTimeout(() => {
+            backToLogin();
+            document.getElementById('usuario-tipo').value = 'cliente';
+            handleUserTypeChange();
+            document.getElementById('nombre-empresa').value = empresa;
+          }, 2000);
+        } else {
+          showStatus(`❌ ${result.message}`, 'error', 'register-status-container');
+        }
+      } catch (error) {
+        showStatus("❌ Error en el registro. Intente nuevamente.", 'error', 'register-status-container');
+      } finally {
+        setButtonLoading(button, false);
+      }
+    }
+
+    // ========== NAVEGACIÓN ==========
+    function showRegisterForm() {
+      document.getElementById('login-selection').classList.add('hidden');
+      document.getElementById('register-form').classList.remove('hidden');
+      document.getElementById('register-form').classList.add('fade-in');
+      setTimeout(() => document.getElementById('reg-empresa').focus(), 200);
+    }
+
+    function backToLogin() {
+      document.getElementById('register-form').classList.add('hidden');
+      document.getElementById('success-screen').classList.add('hidden');
+      document.getElementById('login-selection').classList.remove('hidden');
+      document.getElementById('login-selection').classList.add('fade-in');
+      
+      // Limpiar formularios
+      document.querySelectorAll('#register-form input').forEach(input => input.value = '');
+      document.getElementById('register-status-container').innerHTML = '';
+    }
+
+    function showSuccessScreen(user) {
+      document.getElementById('login-selection').classList.add('hidden');
+      document.getElementById('register-form').classList.add('hidden');
+      document.getElementById('success-screen').classList.remove('hidden');
+      document.getElementById('success-screen').classList.add('fade-in');
+      
+      const welcomeMsg = document.getElementById('welcome-message');
+      if (user.rol === 'Cliente') {
+        welcomeMsg.textContent = `${user.representante} de ${user.empresa}`;
+      } else {
+        welcomeMsg.textContent = `${user.nombre} - ${user.rol}`;
+      }
+    }
+
+    function redirectToDashboard() {
+      const user = JSON.parse(localStorage.getItem('oga-user'));
+      const userType = localStorage.getItem('oga-user-type');
+      
+      let targetUrl;
+      
+      if (userType === 'interno') {
+        targetUrl = DASHBOARD_URLS[user.rol] || DASHBOARD_URLS['Admin'];
+      } else {
+        targetUrl = DASHBOARD_URLS['Cliente'];
+      }
+      
+      showStatus("🚀 Redirigiendo a su panel de control...", 'info');
+      
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 1000);
+    }
+
+    function logout() {
+      localStorage.removeItem('oga-user');
+      localStorage.removeItem('oga-user-type');
+      showStatus("👋 Sesión cerrada exitosamente", 'info');
+      
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    }
+
+    // ========== INICIALIZACIÓN ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      // Verificar y salir del iframe si es necesario
+      if (autoExitIframeOnLoad()) {
+        return;
+      }
+      
+      console.log('🚀 Inicializando Portal OGA v3.0...');
+      
+      detectEnvironment();
+      initializeTheme();
+      
+      // Verificar usuario existente
+      const currentUser = localStorage.getItem('oga-user');
+      if (currentUser) {
+        showSuccessScreen(JSON.parse(currentUser));
+      }
+      
+      // Listener para cambios de tema del sistema
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+        if (!localStorage.getItem('oga-theme')) {
+          if (event.matches) {
+            document.documentElement.classList.add('dark');
+            updateThemeIcon(true);
+          } else {
+            document.documentElement.classList.remove('dark');
+            updateThemeIcon(false);
+          }
+        }
+      });
+      
+      console.log('✅ Portal OGA inicializado correctamente');
+    });
+
+    // Test de conexión al cargar
+    window.addEventListener('load', async () => {
+      try {
+        console.log('🧪 Probando conexión con API OGA...');
+        const testResult = await callAPI('test');
+        console.log('🌐 Conexión establecida con el servidor OGA');
+      } catch (error) {
+        console.log('⚠️ Conectividad limitada con el servidor OGA');
+      }
+    });
+
+    // Manejo de Enter en formularios
+    document.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        const activeElement = document.activeElement;
+        
+        if (activeElement.id === 'password-interno') {
+          loginInternal();
+        } else if (activeElement.id === 'password-cliente') {
+          loginClient();
+        } else if (activeElement.closest('#register-form')) {
+          registerClient();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

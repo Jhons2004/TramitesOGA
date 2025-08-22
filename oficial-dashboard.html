@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>👨‍💼 Panel Oficial OGA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a6fd8;
+      --secondary: #f093fb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-tertiary: #f1f5f9;
+      --surface: #ffffff;
+      
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-tertiary: #94a3b8;
+      
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --transition: all 0.3s ease;
+    }
+
+    .dark {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --surface: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-tertiary: #94a3b8;
+      --border: #334155;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      transition: var(--transition);
+    }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: var(--transition);
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      border-left: 4px solid var(--primary);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .table th,
+    .table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table th {
+      background: var(--bg-tertiary);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-nuevo { background: rgba(59, 130, 246, 0.1); color: var(--info); }
+    .status-proceso { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .status-completado { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: var(--radius);
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-group select,
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .tabs {
+        flex-wrap: wrap;
+      }
+
+      .table {
+        font-size: 0.875rem;
+      }
+    }
+    /* Solo agregar estos estilos específicos: */
+    
+    .notification-badge {
+      position: relative;
+    }
+
+    .notification-badge::after {
+      content: attr(data-count);
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .case-priority {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .priority-high { color: var(--danger); }
+    .priority-medium { color: var(--warning); }
+    .priority-low { color: var(--success); }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>👨‍💼 Panel Oficial de Acreditación</h1>
+    <div class="user-info">
+      <span class="notification-badge" data-count="0" id="notification-badge">🔔</span>
+      <span id="user-name"></span>
+      <span id="user-role"></span>
+      <button class="btn btn-danger" onclick="logout()">🚪 Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="my-cases">0</div>
+        <div class="stat-label">Mis Casos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pending-cases">0</div>
+        <div class="stat-label">Pendientes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="completed-today">0</div>
+        <div class="stat-label">Completados Hoy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="avg-response">2h</div>
+        <div class="stat-label">Tiempo Respuesta</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('assigned')">📋 Casos Asignados</button>
+      <button class="tab" onclick="showTab('updates')">🔄 Actualizar Estados</button>
+    </div>
+
+    <!-- Assigned Cases Tab -->
+    <div id="assigned-tab" class="tab-content active">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3>📋 Mis Casos Asignados</h3>
+          <button class="btn btn-primary" onclick="refreshMyCases()">🔄 Actualizar</button>
+        </div>
+        
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Tipo</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Asignado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="my-cases-list">
+            <!-- Casos dinámicos -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Updates Tab -->
+    <div id="updates-tab" class="tab-content">
+      <div class="card">
+        <h3>🔄 Actualizar Estado de Casos</h3>
+        <div class="form-group">
+          <label>Seleccionar Caso:</label>
+          <select id="case-select" onchange="loadCaseDetails()">
+            <option value="">Selecciona un caso...</option>
+          </select>
+        </div>
+        
+        <div id="case-details" style="display: none;">
+          <div class="form-group">
+            <label>Estado Actual:</label>
+            <input type="text" id="current-status" readonly>
+          </div>
+          
+          <div class="form-group">
+            <label>Nuevo Estado:</label>
+            <select id="new-status">
+              <option value="En Proceso">En Proceso</option>
+              <option value="En Revisión">En Revisión</option>
+              <option value="Pendiente Documentos">Pendiente Documentos</option>
+              <option value="Completado">Completado</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Comentarios:</label>
+            <textarea id="status-comments" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);"></textarea>
+          </div>
+          
+          <button class="btn btn-success" onclick="updateCaseStatus()">
+            ✅ Actualizar Estado
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Updates -->
+      <div class="card">
+        <h3>📝 Actualizaciones Recientes</h3>
+        <div id="recent-updates">
+          <!-- Actualizaciones dinámicas -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Case Details Modal -->
+  <div id="case-modal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <h3 id="modal-title">📋 Detalles del Caso</h3>
+      <div id="case-info">
+        <!-- Información del caso -->
+      </div>
+      <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+        <button class="btn btn-primary" onclick="openCaseChat()">💬 Chat con Cliente</button>
+        <button class="btn btn-danger" onclick="closeModal()">❌ Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzXf0w2__ccwU7r3c9UW5Eq8TFM5t_lPtTzs18svXrpZJkdD8OcYVNsRT8qsLJijnAL/exec';
+    let currentUser = null;
+    let myCases = [];
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+      const userData = localStorage.getItem('currentUser');
+      if (!userData) {
+        window.location.href = 'https://sites.google.com/oga.org.gt/tramitesoga/login';
+        return;
+      }
+
+      currentUser = JSON.parse(userData);
+      
+      if (currentUser.rol !== 'Oficial de Acreditación') {
+        alert('Acceso denegado. No eres un oficial de acreditación.');
+        window.location.href = 'https://sites.google.com/oga.org.gt/tramitesoga/login';
+        return;
+      }
+
+      document.getElementById('user-name').textContent = currentUser.nombre;
+      document.getElementById('user-role').textContent = `(${currentUser.rol})`;
+
+      loadMyCases();
+      setInterval(checkNewAssignments, 30000); // Verificar cada 30 segundos
+    });
+
+    // Cargar mis casos
+    async function loadMyCases() {
+      try {
+        const tickets = await callAPI('getTicketsByRole', {
+          userEmail: currentUser.email,
+          userRole: currentUser.rol,
+          userName: currentUser.nombre
+        });
+
+        myCases = tickets;
+        updateMyStats(tickets);
+        displayMyCases(tickets);
+        updateCaseSelect(tickets);
+      } catch (error) {
+        console.error('Error cargando casos:', error);
+      }
+    }
+
+    // Actualizar estadísticas
+    function updateMyStats(cases) {
+      const totalCases = cases.length;
+      const pendingCases = cases.filter(c => c.estado !== 'Completado').length;
+      const completedToday = cases.filter(c => {
+        const today = new Date().toDateString();
+        return c.estado === 'Completado' && 
+               new Date(c.fechaActualizacion).toDateString() === today;
+      }).length;
+
+      document.getElementById('my-cases').textContent = totalCases;
+      document.getElementById('pending-cases').textContent = pendingCases;
+      document.getElementById('completed-today').textContent = completedToday;
+    }
+
+    // Mostrar mis casos
+    function displayMyCases(cases) {
+      const tbody = document.getElementById('my-cases-list');
+      
+      tbody.innerHTML = cases.map(ticket => {
+        const priority = getPriority(ticket);
+        return `
+          <tr>
+            <td>${ticket.id}</td>
+            <td>${ticket.empresa}</td>
+            <td>${ticket.tipoTramite}</td>
+            <td>
+              <span class="case-priority priority-${priority.level}">
+                ${priority.icon} ${priority.text}
+              </span>
+            </td>
+            <td><span class="status status-${ticket.estado.toLowerCase().replace(' ', '-')}">${ticket.estado}</span></td>
+            <td>${new Date(ticket.fechaCreacion).toLocaleDateString()}</td>
+            <td>
+              <button class="btn btn-primary" onclick="viewCaseDetails('${ticket.id}')">
+                👁️ Ver
+              </button>
+              <button class="btn btn-success" onclick="openCaseChat('${ticket.id}')">
+                💬 Chat
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Determinar prioridad del caso
+    function getPriority(ticket) {
+      const daysSinceCreated = Math.floor(
+        (new Date() - new Date(ticket.fechaCreacion)) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysSinceCreated > 7) {
+        return { level: 'high', icon: '🔴', text: 'Alta' };
+      } else if (daysSinceCreated > 3) {
+        return { level: 'medium', icon: '🟡', text: 'Media' };
+      } else {
+        return { level: 'low', icon: '🟢', text: 'Baja' };
+      }
+    }
+
+    // Funciones de pestañas
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      document.getElementById(tabName + '-tab').classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Actualizar selector de casos
+    function updateCaseSelect(cases) {
+      const select = document.getElementById('case-select');
+      select.innerHTML = '<option value="">Selecciona un caso...</option>' +
+        cases.map(ticket => `
+          <option value="${ticket.id}">
+            ${ticket.id} - ${ticket.empresa} (${ticket.estado})
+          </option>
+        `).join('');
+    }
+
+    // Cargar detalles del caso para actualización
+    function loadCaseDetails() {
+      const caseId = document.getElementById('case-select').value;
+      if (!caseId) {
+        document.getElementById('case-details').style.display = 'none';
+        return;
+      }
+
+      const ticket = myCases.find(t => t.id === caseId);
+      if (ticket) {
+        document.getElementById('current-status').value = ticket.estado;
+        document.getElementById('case-details').style.display = 'block';
+      }
+    }
+
+    // Actualizar estado del caso
+    async function updateCaseStatus() {
+      const caseId = document.getElementById('case-select').value;
+      const newStatus = document.getElementById('new-status').value;
+      const comments = document.getElementById('status-comments').value;
+
+      if (!caseId || !newStatus) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+      }
+
+      try {
+        const result = await callAPI('updateTicketStatus', {
+          ticketId: caseId,
+          newStatus: newStatus
+        });
+
+        if (result.success) {
+          alert('Estado actualizado exitosamente');
+          
+          // Enviar notificación por email (mock)
+          await sendNotificationEmail(caseId, newStatus, comments);
+          
+          // Recargar datos
+          loadMyCases();
+          
+          // Limpiar formulario
+          document.getElementById('case-select').value = '';
+          document.getElementById('status-comments').value = '';
+          document.getElementById('case-details').style.display = 'none';
+        } else {
+          alert('Error al actualizar estado: ' + result.message);
+        }
+      } catch (error) {
+        alert('Error de conexión');
+        console.error(error);
+      }
+    }
+
+    // Enviar notificación por email (simulado)
+    async function sendNotificationEmail(caseId, newStatus, comments) {
+      console.log(`📧 Enviando notificación desde info@oga.gov.gt:`);
+      console.log(`Caso ${caseId} actualizado a: ${newStatus}`);
+      console.log(`Comentarios: ${comments}`);
+      // En producción, esto se haría desde el backend
+    }
+
+    // Ver detalles del caso
+    function viewCaseDetails(caseId) {
+      const ticket = myCases.find(t => t.id === caseId);
+      if (!ticket) return;
+
+      document.getElementById('modal-title').textContent = `📋 Caso ${ticket.id}`;
+      document.getElementById('case-info').innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <strong>Cliente:</strong> ${ticket.empresa}<br>
+            <strong>Email:</strong> ${ticket.clienteEmail}<br>
+            <strong>Tipo:</strong> ${ticket.tipoTramite}<br>
+            <strong>Estado:</strong> ${ticket.estado}
+          </div>
+          <div>
+            <strong>Creado:</strong> ${new Date(ticket.fechaCreacion).toLocaleString()}<br>
+            <strong>Actualizado:</strong> ${new Date(ticket.fechaActualizacion).toLocaleString()}<br>
+            <strong>Descripción:</strong> ${ticket.descripcion}
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('case-modal').classList.add('show');
+    }
+
+    // Abrir chat con cliente
+    function openCaseChat(caseId) {
+      // Redireccionar a la página de chat
+      localStorage.setItem('activeCaseId', caseId);
+      window.location.href = `https://sites.google.com/oga.org.gt/tramitesoga/chat?case=${caseId}`;
+    }
+
+    // Verificar nuevas asignaciones
+    async function checkNewAssignments() {
+      try {
+        const tickets = await callAPI('getTicketsByRole', {
+          userEmail: currentUser.email,
+          userRole: currentUser.rol,
+          userName: currentUser.nombre
+        });
+
+        const newCases = tickets.length - myCases.length;
+        if (newCases > 0) {
+          const badge = document.getElementById('notification-badge');
+          badge.setAttribute('data-count', newCases);
+          
+          // Mostrar notificación
+          showNotification(`🔔 Tienes ${newCases} caso(s) nuevo(s) asignado(s)`);
+          
+          // Actualizar lista
+          myCases = tickets;
+          updateMyStats(tickets);
+          displayMyCases(tickets);
+        }
+      } catch (error) {
+        console.error('Error verificando asignaciones:', error);
+      }
+    }
+
+    // Mostrar notificación
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--success);
+        color: white;
+        padding: 1rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        z-index: 1001;
+        animation: slideInRight 0.3s ease;
+      `;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+    }
+
+    // Funciones auxiliares
+    function refreshMyCases() {
+      loadMyCases();
+    }
+
+    function closeModal() {
+      document.getElementById('case-modal').classList.remove('show');
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('userType');
+      window.location.href = 'https://sites.google.com/oga.org.gt/tramitesoga/login';
+    }
+
+    // Función API (igual que en admin)
+    async function callAPI(action, params = {}) {
+      try {
+        const url = new URL(API_URL);
+        url.searchParams.append('action', action);
+        
+        Object.keys(params).forEach(key => {
+          if (params[key] !== null && params[key] !== undefined) {
+            url.searchParams.append(key, params[key]);
+          }
+        });
+
+        const response = await fetch(url.toString());
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+      }
+    }
+  </script>
+</body>
+</html>
