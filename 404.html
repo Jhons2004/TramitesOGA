@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Redirigiendo…</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 2rem; }
+    .box { max-width: 720px; margin: 10vh auto; }
+    h1 { font-size: 1.25rem; }
+    code { background: #f6f8fa; padding: .1rem .3rem; border-radius: 4px; }
+  </style>
+  <script>
+    (function() {
+      // Base path cuando se hospeda en GitHub Pages bajo user.github.io/TramitesOGA
+      var repoBase = '/TramitesOGA';
+
+      function normalize(p) {
+        if (!p) return '/';
+        try {
+          if (p[0] !== '/') p = '/' + p;        // Asegura slash inicial
+          if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1); // Quita slash final
+          return p;
+        } catch (e) { return '/'; }
+      }
+
+      // Path actual sin el prefijo del repo (si existe)
+      var fullPath = window.location.pathname || '/';
+      var path = fullPath.startsWith(repoBase) ? fullPath.slice(repoBase.length) : fullPath;
+      path = normalize(path);
+
+      // Rutas limpias -> archivos reales
+      var routes = {
+        '/': '/index.html',
+        '/index': '/index.html',
+        '/admin': '/admin-dashboard.html',
+        '/oficial': '/oficial-dashboard.html',
+        '/cliente': '/cliente-dashboard.html',
+        '/chat': '/chat.html'
+      };
+
+      function resolveTarget(p) {
+        if (routes[p]) return routes[p];
+        if (/\.html$/i.test(p)) return p; // ya es un .html
+        var seg = p.split('/').pop();
+        if (routes['/' + seg]) return routes['/' + seg];
+        return '/index.html'; // fallback
+      }
+
+      var target = resolveTarget(path);
+      var dest = repoBase + target + (window.location.search || '') + (window.location.hash || '');
+
+      // Redirige
+      window.location.replace(dest);
+    })();
+  </script>
+</head>
+<body>
+  <div class="box">
+    <h1>Redirigiendo…</h1>
+    <p>Si no eres redirigido automáticamente, ve a <a id="link" href="/TramitesOGA/">la página principal</a>.</p>
+    <script>
+      (function() {
+        var link = document.getElementById('link');
+        if (link) link.href = '/TramitesOGA/index.html';
+      })();
+    </script>
+  </div>
+</body>
+</html>
