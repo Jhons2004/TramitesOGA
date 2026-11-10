@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agenda Consejo OGA v23 — Qué cambió y dónde copiarlo</title>
+<style>
+  :root {
+    --oga-blue: #2563eb;
+    --oga-blue-dark: #1d4ed8;
+    --oga-blue-light: #dbeafe;
+    --oga-bg: #f8fafc;
+    --oga-surface: #ffffff;
+    --oga-text: #1e293b;
+    --oga-muted: #64748b;
+    --oga-border: #e2e8f0;
+    --oga-green: #16a34a;
+    --oga-green-light: #dcfce7;
+    --oga-amber: #b45309;
+    --oga-amber-light: #fef3c7;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--oga-bg); color: var(--oga-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+  }
+  header.hero {
+    background: linear-gradient(135deg, #334155 0%, #2563eb 70%, #3b82f6 100%);
+    color: #fff; padding: 3rem 1.5rem 2.5rem;
+  }
+  .hero-inner { max-width: 960px; margin: 0 auto; }
+  .hero h1 { margin: 0 0 .5rem; font-size: 2rem; line-height: 1.2; }
+  .hero p { margin: .25rem 0; color: #dbeafe; }
+  .badge {
+    display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35);
+    color: #fff; border-radius: 9999px; padding: .2rem .8rem; font-size: .85rem; font-weight: 600;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; padding-bottom: .5rem; border-bottom: 2px solid var(--oga-blue); }
+  h3 { font-size: 1.15rem; margin: 0 0 .5rem; }
+  .summary { background: var(--oga-surface); border: 1px solid var(--oga-border); border-radius: .75rem; padding: 1.25rem 1.5rem; }
+  .summary ol { margin: .5rem 0 0; padding-left: 1.25rem; }
+  .summary li { margin: .4rem 0; }
+  .summary li strong { color: var(--oga-blue-dark); }
+  .card {
+    background: var(--oga-surface); border: 1px solid var(--oga-border);
+    border-radius: .75rem; padding: 1.5rem; margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+  }
+  .card-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    background: var(--oga-blue); color: #fff; font-weight: 700; margin-right: .5rem;
+  }
+  .card h3 { display: flex; align-items: center; flex-wrap: wrap; gap: .25rem; }
+  .tag {
+    display: inline-block; font-size: .75rem; font-weight: 700; border-radius: 9999px;
+    padding: .15rem .6rem; margin-left: .5rem; white-space: nowrap;
+  }
+  .tag-html { background: var(--oga-blue-light); color: var(--oga-blue-dark); }
+  .tag-gs { background: var(--oga-green-light); color: var(--oga-green); }
+  .tag-ambos { background: var(--oga-amber-light); color: var(--oga-amber); }
+  .field { margin: .75rem 0; }
+  .field-label { font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color: var(--oga-muted); }
+  code, .mono {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: .875em; background: #f1f5f9; border: 1px solid var(--oga-border);
+    border-radius: .35rem; padding: .1rem .35rem; word-break: break-word;
+  }
+  pre {
+    background: #0f172a; color: #e2e8f0; border-radius: .5rem; padding: 1rem;
+    overflow-x: auto; font-size: .85rem; line-height: 1.5; margin: .5rem 0 0;
+  }
+  pre code { background: none; border: none; color: inherit; padding: 0; }
+  ol.steps, ul.steps { padding-left: 1.25rem; }
+  ol.steps li, ul.steps li { margin: .45rem 0; }
+  table { width: 100%; border-collapse: collapse; background: var(--oga-surface); font-size: .95rem; }
+  th, td { padding: .75rem; text-align: left; border-bottom: 1px solid var(--oga-border); vertical-align: top; }
+  th { background: var(--oga-blue-light); color: var(--oga-blue-dark); font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+  tr:last-child td { border-bottom: none; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--oga-border); border-radius: .75rem; }
+  a { color: var(--oga-blue); }
+  a:hover { color: var(--oga-blue-dark); }
+  .note {
+    background: var(--oga-blue-light); border-left: 4px solid var(--oga-blue);
+    border-radius: .5rem; padding: 1rem 1.25rem; margin: 1rem 0;
+  }
+  footer { text-align: center; color: var(--oga-muted); font-size: .875rem; padding: 2rem 1rem 3rem; }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.5rem; }
+    .card { padding: 1rem; }
+    main { padding: 1.25rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">v22 → v23 · 10 de noviembre de 2026</span>
+    <h1>Agenda Consejo OGA — v23</h1>
+    <p><strong>Qué cambió, dónde está y cómo se instala.</strong></p>
+    <p>Esta página es la guía de los 6 cambios nuevos de la versión 23. Cada cambio indica el lugar exacto (función o ID) en los dos archivos del sistema, para copiar y pegar sin buscar a ciegas.</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- RESUMEN -->
+  <section>
+    <h2>Resumen en 6 líneas</h2>
+    <div class="summary">
+      <ol>
+        <li><strong>Estadísticas congruentes:</strong> resumen, barra de consenso y tabla por tipo de decisión, con estado APROBADO / RECHAZADO / SIN MAYORÍA y detalle de votantes.</li>
+        <li><strong>Filtro por última reunión vigente:</strong> Ver Datos y Estadísticas arrancan siempre en la reunión vigente según <code>Configuración</code>, aunque esté cerrada, aprobada o vencida.</li>
+        <li><strong>Reconocimiento de Acreditación separado:</strong> ya no exige FAC-014/078/003/090 ni FAC-114; solo documentación sin nombre estándar.</li>
+        <li><strong>Nuevo OGA-FAC-114:</strong> 5.º documento obligatorio para todas las demás decisiones; el nombre del archivo debe iniciar con <code>OGA-FAC-114</code>.</li>
+        <li><strong>Notificaciones sin Reconocimiento:</strong> se quitó "Reconocimiento de acreditación" del tipo de notificación y el backend lo rechaza si llega.</li>
+        <li><strong>Vista previa sin guardar:</strong> el Generador de Documentos muestra la agenda construida en pantalla sin guardar ni registrar nada en Drive.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- CAMBIO 1 -->
+  <section>
+    <h2>Los 6 cambios, uno por uno</h2>
+
+    <article class="card" id="cambio-1">
+      <h3><span class="card-num">1</span> Estadísticas más congruentes, claras y legibles <span class="tag tag-ambos">HTML + .gs</span></h3>
+      <div class="field"><span class="field-label">Qué hace</span>
+        <p>Las estadísticas de votación ahora se muestran de forma congruente y legible: un resumen general con 4 tarjetas (A Favor, En Contra, Abstención, Total), una barra de consenso con el porcentaje de cada voto, y una tabla agrupada por tipo de decisión. Cada registro muestra su estado: <strong>APROBADO</strong> (más del 50&nbsp;% a favor), <strong>RECHAZADO</strong> (más en contra que a favor) o <strong>SIN MAYORÍA</strong>, y un detalle desplegable con la lista de votantes (nombre, institución, voto y comentario).</p>
+      </div>
+      <div class="field"><span class="field-label">Por qué</span>
+        <p>Antes los números se mezclaban entre tipos de decisión y no quedaba claro qué registro estaba aprobado ni quién votó qué. Ahora cada registro se distingue por registro + tipo de decisión, y el estado se calcula con la misma regla en todos lados.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el HTML</span>
+        <p>Función <code>mostrarEstadisticasDetalladasMejoradas(datos, targetId)</code> — renderiza el resumen, la barra de consenso (<code>.consenso-bar-container</code>), las tarjetas por tipo y el detalle de votantes. Se usa en la pestaña <strong>Estadísticas</strong> (contenedor <code>#contenedorPrincipalEstadisticas</code>) y en la pestaña <strong>Votaciones</strong> (contenedor <code>#contenidoEstadisticas</code>).</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el .gs</span>
+        <p>Función <code>obtenerEstadisticasVotosPorReunionMejoradas(numeroReunion)</code> — agrupa por clave única <code>registro + tipo de decisión</code>, calcula <code>porcentajeAFavor</code> y <code>puedeGenerarResolucion</code> (mayoría &gt; 50&nbsp;%), y devuelve <code>registros</code> y <code>registrosPorTipo</code>. Wrapper: <code>obtenerEstadisticasVotosPorReunion(numeroReunion)</code>.</p>
+      </div>
+      <div class="field"><span class="field-label">Cómo probarlo</span>
+        <ol class="steps">
+          <li>Abra la pestaña <strong>Estadísticas</strong>.</li>
+          <li>Seleccione una reunión con votos registrados.</li>
+          <li>Verifique: 4 tarjetas de resumen, barra de consenso por registro, estado APROBADO / RECHAZADO / SIN MAYORÍA y el detalle de votantes al desplegar.</li>
+          <li>Repita en la pestaña <strong>Votaciones</strong> → seleccione agenda → <strong>Ver Estadísticas</strong>.</li>
+        </ol>
+      </div>
+      <div class="field"><span class="field-label">Qué copiar/pegar</span>
+        <p>Archivo completo <code>Agenda_Sistema.html</code> y archivo completo <code>Agenda_Consejo.gs</code> (el render y el cálculo van juntos).</p>
+      </div>
+    </article>
+
+    <!-- CAMBIO 2 -->
+    <article class="card" id="cambio-2">
+      <h3><span class="card-num">2</span> Filtro siempre por la última reunión vigente <span class="tag tag-ambos">HTML + .gs</span></h3>
+      <div class="field"><span class="field-label">Qué hace</span>
+        <p>Las pestañas <strong>Ver Datos</strong> y <strong>Estadísticas</strong> arrancan filtradas por la última reunión vigente según la hoja <code>Configuración</code>. No importa si esa agenda ya está cerrada, aprobada o vencida: el filtro siempre apunta a la misma reunión vigente, y el usuario puede cambiarla manualmente después. Un badge visible indica cuál es la reunión vigente actual.</p>
+      </div>
+      <div class="field"><span class="field-label">Por qué</span>
+        <p>Antes los filtros arrancaban en "todas las reuniones" o en una reunión fija de 2026, y había que buscar a mano cuál era la vigente. Ahora el sistema la detecta solo desde <code>Configuración</code>.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el HTML</span>
+        <p>Variable global <code>reunionVigenteActual</code> y badge de reunión vigente en las pestañas Ver Datos y Estadísticas. Al cargar, <code>cargarDatos()</code> y <code>cargarEstadisticasReunionEspecifica()</code> usan esa reunión como filtro inicial en el select <code>#filtroReunion</code> y en <code>#selectReunionEstadisticas</code>.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el .gs</span>
+        <p>Función <code>obtenerReunionVigenteParaFiltros()</code> — lee la hoja <code>Configuración</code> (fila 2, columna B = número de reunión) y devuelve la reunión vigente, sin importar su estado (ACTIVA, CERRADA, APROBADA o VENCIDA). La usa <code>obtenerConfiguracionAgendaConsejo()</code>.</p>
+      </div>
+      <div class="field"><span class="field-label">Cómo probarlo</span>
+        <ol class="steps">
+          <li>Abra la pestaña <strong>Ver Datos</strong>: el filtro de reunión debe venir preseleccionado en la reunión vigente y el badge debe mostrarla.</li>
+          <li>Abra la pestaña <strong>Estadísticas</strong>: debe cargar directamente las estadísticas de esa misma reunión.</li>
+          <li>Cambie el estado de la agenda en <code>Configuración</code> (por ejemplo, a CERRADA) y recargue: el filtro debe seguir apuntando a la misma reunión.</li>
+        </ol>
+      </div>
+      <div class="field"><span class="field-label">Qué copiar/pegar</span>
+        <p>Archivo completo <code>Agenda_Sistema.html</code> y archivo completo <code>Agenda_Consejo.gs</code>.</p>
+      </div>
+    </article>
+
+    <!-- CAMBIO 3 -->
+    <article class="card" id="cambio-3">
+      <h3><span class="card-num">3</span> Reconocimiento de Acreditación separado <span class="tag tag-ambos">HTML + .gs</span></h3>
+      <div class="field"><span class="field-label">Qué hace</span>
+        <p>Cuando el tipo de decisión es <strong>Reconocimiento de Acreditación</strong>, el formulario ya NO exige los documentos OGA-FAC-014, OGA-FAC-078, OGA-FAC-003, OGA-FAC-090 ni el nuevo OGA-FAC-114. En su lugar muestra una sección propia de documentación, donde se cargan archivos <strong>sin nombre estándar</strong> (cualquier nombre de archivo es válido). Esos archivos se guardan en Drive en la carpeta <code>Documentos_Reconocimiento</code> dentro de la carpeta de la agenda.</p>
+      </div>
+      <div class="field"><span class="field-label">Por qué</span>
+        <p>El reconocimiento no sigue el mismo paquete documental que las demás decisiones; obligar los 4 (ahora 5) FAC bloqueaba el registro de reconocimientos que no los tienen.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el HTML</span>
+        <p>Sección <code>#seccionDocsReconocimiento</code> en el formulario Agregar (visible solo cuando <code>#tipoDecision</code> = "Reconocimiento de Acreditación"). La función <code>mostrarCamposEspecificos()</code> alterna entre la sección de los FAC y esta sección. La validación de documentos obligatorios se salta para reconocimiento en <code>guardarElemento()</code>.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el .gs</span>
+        <p>Función <code>obtenerDocumentosObligatoriosPorTipoDecision_(tipoDecision)</code> — devuelve lista vacía para "Reconocimiento de Acreditación". <code>guardarDatosAgendaConsejo(datos)</code> guarda los archivos de reconocimiento en la subcarpeta <code>Documentos_Reconocimiento</code> sin validar prefijos de nombre.</p>
+      </div>
+      <div class="field"><span class="field-label">Cómo probarlo</span>
+        <ol class="steps">
+          <li>En <strong>Agregar</strong>, elija tipo DECISIÓN y tipo de decisión <strong>Reconocimiento de Acreditación</strong>.</li>
+          <li>Verifique que las tarjetas FAC-014/078/003/090/114 desaparecen y aparece la sección de documentación de reconocimiento.</li>
+          <li>Cargue un archivo con cualquier nombre y guarde: debe guardarse sin error y aparecer en Drive en <code>Documentos_Reconocimiento</code>.</li>
+        </ol>
+      </div>
+      <div class="field"><span class="field-label">Qué copiar/pegar</span>
+        <p>Archivo completo <code>Agenda_Sistema.html</code> y archivo completo <code>Agenda_Consejo.gs</code>.</p>
+      </div>
+    </article>
+
+    <!-- CAMBIO 4 -->
+    <article class="card" id="cambio-4">
+      <h3><span class="card-num">4</span> Nuevo documento obligatorio OGA-FAC-114 <span class="tag tag-ambos">HTML + .gs</span></h3>
+      <div class="field"><span class="field-label">Qué hace</span>
+        <p>Todas las decisiones <strong>excepto</strong> Reconocimiento de Acreditación ahora exigen un 5.º documento: <strong>OGA-FAC-114</strong>. El nombre del archivo <strong>debe iniciar con <code>OGA-FAC-114</code></strong> (igual que los demás FAC). Sin este archivo el sistema no permite guardar el elemento.</p>
+      </div>
+      <div class="field"><span class="field-label">Por qué</span>
+        <p>El FAC-114 es un documento requerido para la toma de decisión en los demás tipos (evaluación inicial, reevaluación, ampliación, reducción, suspensión, retiro) y faltaba en el paquete obligatorio.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el HTML</span>
+        <p>Tarjeta de carga <code>fac114</code> en la rejilla de documentos de decisión (<code>#dropZoneFac114</code>, input <code>#adjuntoFac114</code>, lista <code>#listaFac114</code>, estado <code>#estadoFac114</code>). Se agrega a <code>DOCUMENTOS_DECISION_REQUERIDOS</code> con <code>codigo: 'OGA-FAC-114'</code> y a <code>archivosDecisionSeleccionados.fac114</code>; la validación en <code>validarDocumentosDecisionRequeridos()</code> lo incluye.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el .gs</span>
+        <p>Constante <code>DOCUMENTOS_DECISION_OBLIGATORIOS</code> ahora incluye <code>'OGA-FAC-114'</code>. Función <code>obtenerDocumentosObligatoriosPorTipoDecision_(tipoDecision)</code> — devuelve los 5 documentos para cualquier decisión que no sea reconocimiento, y lista vacía para reconocimiento. <code>validarDocumentosDecisionObligatorios_()</code> y <code>obtenerTipoDocumentoDecision_()</code> reconocen el prefijo <code>OGA-FAC-114</code> y lo guardan en su subcarpeta propia en Drive.</p>
+      </div>
+      <div class="field"><span class="field-label">Cómo probarlo</span>
+        <ol class="steps">
+          <li>En <strong>Agregar</strong>, elija DECISIÓN con tipo <strong>Reevaluación</strong> (o cualquier otro que no sea reconocimiento).</li>
+          <li>Intente guardar solo con FAC-014/078/003/090: debe rechazarlo e indicar que falta OGA-FAC-114.</li>
+          <li>Cargue un archivo llamado, por ejemplo, <code>OGA-FAC-114_evidencia.pdf</code>: debe aceptarlo y permitir guardar.</li>
+          <li>Cargue un archivo con otro nombre en esa tarjeta: debe rechazarlo por no iniciar con OGA-FAC-114.</li>
+        </ol>
+      </div>
+      <div class="field"><span class="field-label">Qué copiar/pegar</span>
+        <p>Archivo completo <code>Agenda_Sistema.html</code> y archivo completo <code>Agenda_Consejo.gs</code>.</p>
+      </div>
+    </article>
+
+    <!-- CAMBIO 5 -->
+    <article class="card" id="cambio-5">
+      <h3><span class="card-num">5</span> "Reconocimiento de acreditación" eliminado de Notificaciones <span class="tag tag-ambos">HTML + .gs</span></h3>
+      <div class="field"><span class="field-label">Qué hace</span>
+        <p>La opción <strong>"Reconocimiento de acreditación"</strong> ya no aparece en el select de tipo de notificación. Si por algún medio llegara ese valor al backend, <code>guardarDatosAgendaConsejo()</code> lo rechaza con error.</p>
+      </div>
+      <div class="field"><span class="field-label">Por qué</span>
+        <p>El reconocimiento es un tipo de <strong>decisión</strong>, no una notificación; tenerlo en ambas listas generaba registros mal clasificados.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el HTML</span>
+        <p>Select <code>#tipoNotificacion</code> en la sección <code>#camposNotificacion</code>: se eliminó la opción <code>&lt;option value="Reconocimiento de acreditación"&gt;</code>. Las opciones restantes son: Notificación de Decisión, Solicitud de Información, Mantenimiento, Recordatorio, Suspensión Temporal, Levantamiento de Suspensión y Otro.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el .gs</span>
+        <p>En <code>guardarDatosAgendaConsejo(datos)</code>, validación de NOTIFICACIÓN: si <code>tipoNotificacion</code> es "Reconocimiento de acreditación", devuelve error y no guarda.</p>
+      </div>
+      <div class="field"><span class="field-label">Cómo probarlo</span>
+        <ol class="steps">
+          <li>En <strong>Agregar</strong>, elija tipo NOTIFICACIÓN y abra el select de tipo de notificación: "Reconocimiento de acreditación" no debe aparecer.</li>
+          <li>Verifique que las demás opciones siguen ahí y que una notificación se guarda normalmente.</li>
+        </ol>
+      </div>
+      <div class="field"><span class="field-label">Qué copiar/pegar</span>
+        <p>Archivo completo <code>Agenda_Sistema.html</code> y archivo completo <code>Agenda_Consejo.gs</code>.</p>
+      </div>
+    </article>
+
+    <!-- CAMBIO 6 -->
+    <article class="card" id="cambio-6">
+      <h3><span class="card-num">6</span> Vista previa del documento sin guardar <span class="tag tag-ambos">HTML + .gs</span></h3>
+      <div class="field"><span class="field-label">Qué hace</span>
+        <p>En la pestaña <strong>Documentos</strong> hay un botón <strong>"Ver vista previa (sin guardar)"</strong>. Al pulsarlo, el sistema construye la agenda con la plantilla (decisiones, notificaciones y varios, con sus enlaces) y la muestra en pantalla en un modal, como evidencia de cómo se verá el documento. <strong>No guarda nada, no registra nada y no crea ningún archivo en Drive.</strong></p>
+      </div>
+      <div class="field"><span class="field-label">Por qué</span>
+        <p>Antes la única forma de ver la agenda era generarla, lo que creaba un archivo en "Agendas Creadas" y la registraba. Ahora se puede revisar el contenido antes de decidir generarla.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el HTML</span>
+        <p>Botón <code>#btnVistaPreviaAgenda</code> en la pestaña Documentos, junto a "Generar Agenda Profesional". Función <code>verVistaPreviaAgenda()</code>: llama al backend, muestra el estado de carga y renderiza el resultado en el modal <code>#modalConfirmacion</code> (título, fecha y puntos por sección). No toca <code>generarDocumento('agenda')</code>.</p>
+      </div>
+      <div class="field"><span class="field-label">Dónde está en el .gs</span>
+        <p>Función <code>generarVistaPreviaAgendaConsejo()</code> — reutiliza la lógica de filtrado y orden de <code>generarAgendaProfesionalConPlantilla()</code> pero construye el contenido en memoria y devuelve el texto/HTML de la agenda. <strong>No</strong> llama a <code>DriveApp</code>, <code>makeCopy</code>, <code>almacenarAgenda()</code> ni <code>desactivarAgendaAlmacenada()</code>.</p>
+      </div>
+      <div class="field"><span class="field-label">Cómo probarlo</span>
+        <ol class="steps">
+          <li>Seleccione una agenda con elementos y vaya a la pestaña <strong>Documentos</strong>.</li>
+          <li>Pulse <strong>"Ver vista previa (sin guardar)"</strong>: debe aparecer el modal con la agenda construida.</li>
+          <li>Verifique en Drive, carpeta "Agendas Creadas": <strong>no debe aparecer ningún archivo nuevo</strong> ni cambiar el contador de archivos.</li>
+          <li>Cierre el modal y pulse "Generar Agenda Profesional": ahí sí se crea el archivo (comportamiento de siempre).</li>
+        </ol>
+      </div>
+      <div class="field"><span class="field-label">Qué copiar/pegar</span>
+        <p>Archivo completo <code>Agenda_Sistema.html</code> y archivo completo <code>Agenda_Consejo.gs</code>.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ARCHIVOS -->
+  <section>
+    <h2>Archivos en el repositorio</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Archivo</th><th>Qué es</th><th>Enlace</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>agenda-consejo/Agenda_Sistema.html</code></td>
+            <td>Frontend v23 (interfaz completa)</td>
+            <td><a href="https://github.com/Jhons2004/TramitesOGA/blob/main/agenda-consejo/Agenda_Sistema.html">Ver en GitHub</a></td>
+          </tr>
+          <tr>
+            <td><code>agenda-consejo/Agenda_Consejo.gs</code></td>
+            <td>Backend v23 (lógica Apps Script)</td>
+            <td><a href="https://github.com/Jhons2004/TramitesOGA/blob/main/agenda-consejo/Agenda_Consejo.gs">Ver en GitHub</a></td>
+          </tr>
+          <tr>
+            <td><code>agenda-consejo/LANDING_CAMBIOS_v23.html</code></td>
+            <td>Esta página (guía de cambios v23)</td>
+            <td><a href="https://github.com/Jhons2004/TramitesOGA/blob/main/agenda-consejo/LANDING_CAMBIOS_v23.html">Ver en GitHub</a></td>
+          </tr>
+          <tr>
+            <td><code>agenda-consejo/README.md</code></td>
+            <td>Resumen de cambios v23 en Markdown</td>
+            <td><a href="https://github.com/Jhons2004/TramitesOGA/blob/main/agenda-consejo/README.md">Ver en GitHub</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="color: var(--oga-muted); font-size: .9rem;">Repositorio: <a href="https://github.com/Jhons2004/TramitesOGA">github.com/Jhons2004/TramitesOGA</a> · Carpeta: <code>agenda-consejo/</code> · Rama: <code>main</code></p>
+  </section>
+
+  <!-- INSTALACIÓN -->
+  <section>
+    <h2>Cómo instalar (copiar y pegar) — 3 pasos</h2>
+    <div class="card">
+      <div class="field"><span class="field-label">Paso 1 — Descargar del repo</span>
+        <p>En <a href="https://github.com/Jhons2004/TramitesOGA/tree/main/agenda-consejo">github.com/Jhons2004/TramitesOGA/tree/main/agenda-consejo</a>, abra <code>Agenda_Sistema.html</code> y <code>Agenda_Consejo.gs</code> y copie el contenido completo de cada uno (botón <em>Raw</em> → Ctrl+A → Ctrl+C).</p>
+      </div>
+      <div class="field"><span class="field-label">Paso 2 — Pegar en Apps Script</span>
+        <p>En el proyecto de Google Apps Script del sistema de Agenda: pegue el contenido de <code>Agenda_Sistema.html</code> en el archivo HTML del proyecto (reemplazo completo) y el contenido de <code>Agenda_Consejo.gs</code> en el archivo <code>.gs</code> (reemplazo completo). Los dos archivos van juntos: no mezcle el HTML v23 con el .gs v22, porque las funciones nuevas (<code>obtenerReunionVigenteParaFiltros</code>, <code>generarVistaPreviaAgendaConsejo</code>, <code>obtenerDocumentosObligatoriosPorTipoDecision_</code>) no existirían en el backend viejo.</p>
+      </div>
+      <div class="field"><span class="field-label">Paso 3 — Verificar</span>
+        <p>Guarde, despliegue la nueva versión y ejecute la función de prueba <code>testComunicacion()</code>. Debe responder con éxito. Luego haga la prueba rápida de cada cambio según la sección "Cómo probarlo" de cada tarjeta (empezando por el cambio 4, FAC-114, y el cambio 6, vista previa).</p>
+      </div>
+      <div class="note"><strong>Importante:</strong> esta es una actualización por reemplazo completo de los dos archivos. No hay parches parciales: si pega solo uno de los dos, las funciones nuevas del otro lado no existirán y el sistema fallará.</div>
+    </div>
+  </section>
+
+  <!-- QUÉ NO CAMBIÓ -->
+  <section>
+    <h2>Qué NO cambió</h2>
+    <div class="card">
+      <ul class="steps">
+        <li><strong>Reevaluación — regla de 72 horas:</strong> sigue vigente. <code>validarPlazoReevaluacionBackend()</code> bloquea las reevaluaciones cuando faltan menos de 72 horas para la reunión. El subtítulo del sistema sigue recordándolo.</li>
+        <li><strong>Calendario de reuniones:</strong> la detección de la próxima fecha (<code>obtenerSiguienteFechaReunion()</code> y <code>obtenerDatosProximaReunion()</code>), las fechas extraordinarias y el avance de estado ACTIVA → CERRADA siguen iguales.</li>
+        <li><strong>Votaciones:</strong> envío de invitaciones desde <code>info@oga.org.gt</code>, control de usuarios autorizados (<code>esUsuarioAutorizadoParaVotacion()</code>) y la hoja <code>Agenda_Votacion</code> no cambian.</li>
+        <li><strong>Permisos:</strong> quién puede crear agendas (<code>CORREOS_PERMITIDOS_CREAR</code>) y quién puede votar (<code>CORREOS_PERMITIDOS_VOTACION</code>) siguen iguales.</li>
+        <li><strong>Documentos FAC-014 / 078 / 003 / 090:</strong> siguen siendo obligatorios para todas las decisiones excepto Reconocimiento de Acreditación; solo se suma el FAC-114 como 5.º documento.</li>
+        <li><strong>Resoluciones:</strong> el correlativo anual (<code>obtenerSiguienteResolucion()</code>) y el registro en la hoja <code>Resoluciones</code> no cambian.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Agenda Consejo OGA v23 · Guía de cambios · 10 de noviembre de 2026<br />
+  Repositorio: <a href="https://github.com/Jhons2004/TramitesOGA">github.com/Jhons2004/TramitesOGA</a> · Carpeta <code>agenda-consejo/</code>
+</footer>
+
+</body>
+</html>
