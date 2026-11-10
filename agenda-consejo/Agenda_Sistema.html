@@ -967,12 +967,23 @@
       text-align: right; 
     }
 
-    .flex { 
-      display: flex; 
+    .flex {
+      display: flex;
     }
 
-    .flex-1 { 
-      flex: 1; 
+    /* v23.1: estas dos utilidades se usaban en el HTML pero no existían en el CSS.
+       Sin .flex-col, un contenedor "flex flex-col" quedaba en fila (row) y sus
+       hijos se apretaban de lado a lado: eso rompía la pestaña Estadísticas. */
+    .flex-col {
+      flex-direction: column;
+    }
+
+    .gap-6 {
+      gap: 1.5rem;
+    }
+
+    .flex-1 {
+      flex: 1;
     }
 
     .items-center { 
@@ -1162,11 +1173,23 @@
     }
 
     /* v23: estadísticas claras — tarjetas grandes y tabla resumen por tipo */
+    /* v23.1: el contenedor de estadísticas es columna; sus hijos nunca deben
+       salirse del ancho del diálogo ni forzar scroll horizontal. */
+    #contenedorPrincipalEstadisticas,
+    #contenedorEstadisticasDetalladas {
+      width: 100%;
+      min-width: 0;
+    }
     .stats-kpi-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 1rem;
       margin-bottom: 1rem;
+      width: 100%;
+      min-width: 0;
+    }
+    .stats-kpi-grid > * {
+      min-width: 0;
     }
     .stats-kpi {
       text-align: center;
@@ -2506,7 +2529,7 @@
                 </div>
               </div>
               <div id="estadisticasContenido" class="hidden">
-                 <div id="contenedorPrincipalEstadisticas" class="flex flex-col gap-6"></div>
+                 <div id="contenedorPrincipalEstadisticas" class="flex flex-col gap-6" style="flex-direction:column; min-width:0;"></div>
               </div>
               <div id="sinEstadisticasReunion" class="text-center" style="padding:3rem 0; color:var(--oga-text-soft);">
                 <div style="font-size:4rem;"></div>
@@ -3082,7 +3105,7 @@
               <span class="pill pill-blue">${regs.length} casos</span>
             </div>
             <div style="border:1px solid var(--oga-border); border-top:none; border-radius:0 0 0.5rem 0.5rem; padding:1.5rem; background:var(--oga-bg-surface);">
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1.5rem; min-width: 0;">
         `;
         regs.forEach(reg => {
           const vFavor = Number(reg.votos?.aFavor || 0);
